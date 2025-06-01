@@ -491,15 +491,18 @@ Untuk menghasilkan rekomendasi, sebuah fungsi khusus dibuat.
     ```
 
 * **Contoh Output Rekomendasi (Top-5):**
-    Ketika fungsi diuji dengan input destinasi 'Pantai Ancol', sistem memberikan output sebagai berikut:
+    Ketika fungsi diuji dengan input nama destinasi dengan ID 400 (Hutan Bambu Keputih, kategori: Cagar_Alam), sistem memberikan output sebagai berikut:
     ```
-    # destination_recommendations('Pantai Ancol')
-      destination category
-    0 Pantai Ngrenehan   Bahari
-    1 Pantai Drini       Bahari
-    2 Pantai Pulang Sawal Bahari
-    3 Pantai Krakal      Bahari
-    4 Pantai Parangtritis Bahari
+   ✨ Rekomendasi Destinasi Serupa untuk: Hutan Bambu Keputih (Kategori: Cagar_Alam)
+   ============================================================
+   No.  Destination                              | Category            
+   ------------------------------------------------------------
+   1    Gunung Papandayan                        | Cagar_Alam          
+   2    Gua Maria Kerep Ambarawa                 | Cagar_Alam          
+   3    Bukit Paralayang, Watugupit              | Cagar_Alam          
+   4    Ekowisata Mangrove Wonorejo              | Cagar_Alam          
+   5    Cibubur Garden Diary (Cibugary)          | Cagar_Alam          
+   ------------------------------------------------------------
     ```
     Hasil ini menunjukkan bahwa sistem berhasil merekomendasikan lima destinasi lain yang juga berkategori 'Bahari', sesuai dengan kategori 'Pantai Ancol'.
 
