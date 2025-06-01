@@ -61,9 +61,9 @@ Kondisi ini berdampak langsung pada berbagai aspek bisnis dan pengembangan pariw
 Mengembangkan sistem rekomendasi tempat wisata di Indonesia yang cerdas dan adaptif.
 
 **Tujuan Spesifik:**
-- **Mengembangkan Model Content-Based Filtering dengan TF-IDF dan Cosine Similarity:** Tujuan ini adalah untuk membangun sistem rekomendasi yang menyarankan destinasi wisata berdasarkan kemiripan konten atau atributnya. Secara teknis, ini melibatkan penggunaan metode TF-IDF (_Term Frequency-Inverse Document Frequency_) untuk mengubah deskripsi teks setiap destinasi menjadi representasi numerik (vektor) yang menyoroti kata-kata kunci penting. Selanjutnya, Cosine Similarity akan digunakan untuk menghitung seberapa mirip satu destinasi dengan destinasi lainnya berdasarkan vektor fitur tersebut. Hasilnya, sistem dapat merekomendasikan tempat-tempat yang karakteristiknya serupa dengan yang pernah disukai atau dicari pengguna.
-- **Mengembangkan model Collaborative Filtering dengan deep learning:** Poin ini berfokus pada pembuatan model rekomendasi yang belajar dari pola perilaku kolektif semua pengguna. Artinya, sistem akan menganalisis interaksi pengguna dengan destinasi (seperti rating yang diberikan atau destinasi yang disukai) untuk menemukan pengguna lain dengan selera serupa. Dengan menggunakan teknik deep learning (jaringan syaraf tiruan yang canggih), model dapat menangkap pola preferensi yang kompleks dan tersembunyi. Dengan demikian, sistem dapat merekomendasikan destinasi yang disukai oleh pengguna-pengguna "kembarannya", bahkan jika pengguna tersebut belum pernah melihat destinasi itu sebelumnya.
-- **Menyediakan rekomendasi akurat dan dipersonalisasi:** Tujuan ini menekankan pada kualitas output sistem. "Akurat" berarti rekomendasi yang diberikan harus sesuai dan relevan dengan apa yang kemungkinan besar akan disukai pengguna. "Dipersonalisasi" berarti saran yang ditampilkan harus unik untuk setiap individu, berdasarkan preferensi pribadi mereka (baik dari konten yang mereka sukai maupun dari perilaku mereka dibandingkan pengguna lain), bukan rekomendasi generik yang sama untuk semua orang.
+- **Mengembangkan Model Content-Based Filtering dengan TF-IDF dan Cosine Similarity:** Tujuan ini adalah untuk membangun sistem rekomendasi yang menyarankan destinasi wisata berdasarkan kemiripan konten atau atributnya. Secara teknis, ini melibatkan penggunaan metode TF-IDF (_Term Frequency-Inverse Document Frequency_) untuk mengubah atribut teks setiap destinasi menjadi representasi numerik (vektor) yang menyoroti kata-kata kunci penting. Selanjutnya, Cosine Similarity akan digunakan untuk menghitung seberapa mirip satu destinasi dengan destinasi lainnya berdasarkan vektor fitur tersebut. Hasilnya, sistem dapat merekomendasikan tempat-tempat yang karakteristiknya serupa dengan yang pernah dikunjungi pengguna.
+- **Mengembangkan model Collaborative Filtering dengan deep learning:** Poin ini berfokus pada pembuatan model rekomendasi yang belajar dari pola perilaku kolektif semua pengguna. Artinya, sistem akan menganalisis interaksi pengguna dengan destinasi (seperti rating yang diberikan) untuk menemukan pengguna lain dengan selera serupa. Dengan menggunakan teknik deep learning, model dapat menangkap pola preferensi yang kompleks dan tersembunyi. Dengan demikian, sistem dapat merekomendasikan destinasi yang disukai oleh pengguna-pengguna serupa, bahkan jika pengguna tersebut belum pernah melihat destinasi itu sebelumnya.
+- **Menyediakan rekomendasi akurat dan dipersonalisasi:** Tujuan ini menekankan pada kualitas output sistem. "Akurat" berarti rekomendasi yang diberikan harus sesuai dan relevan dengan apa yang kemungkinan besar akan disukai pengguna. "Dipersonalisasi" berarti saran yang ditampilkan harus unik untuk setiap individu, berdasarkan preferensi pribadi mereka (baik dari konten yang mereka nilai maupun dari perilaku mereka dibandingkan pengguna lain), bukan rekomendasi generik yang sama untuk semua orang.
 - **Meningkatkan pengalaman personalisasi pencarian destinasi:** Proyek ini bertujuan untuk membuat proses pencarian destinasi wisata menjadi lebih personal dan intuitif. Daripada hanya mengandalkan filter umum (seperti kota atau kategori), sistem rekomendasi akan secara proaktif menyajikan pilihan-pilihan yang telah disesuaikan dengan profil dan riwayat preferensi pengguna, seolah-olah sistem "mengenal" selera mereka.
 - **Membantu menemukan destinasi baru dan beragam:** Salah satu tujuan penting adalah membantu pengguna keluar dari "gelembung" destinasi populer dan menemukan "**hidden gem**". Sistem rekomendasi, terutama melalui pendekatan Collaborative Filtering, dapat menyarankan destinasi yang mungkin tidak pernah terpikirkan oleh pengguna sebelumnya namun berpotensi besar untuk disukai. Ini juga membantu memperkenalkan keragaman destinasi wisata yang ada di Indonesia.
 
@@ -77,13 +77,6 @@ Proyek ini bertujuan untuk mengembangkan sistem rekomendasi tempat wisata yang k
 |------------|--------|------------|-----------|
 | **Content-Based Filtering** | TF-IDF + Cosine Similarity | Rekomendasi berdasarkan kemiripan atribut | Ridwansyah et al. (2024) |
 | **Collaborative Filtering** | Model Deep Learning | Rekomendasi berdasarkan pola preferensi pengguna | Faurina & Sitanggang (2023) |
-
-**Metrik Evaluasi:**
-| Metric | Type | Penggunaan |
-|--------|------|------------|
-| RMSE | Regression | Mengukur error prediksi rating |
-| NDCG@k | Ranking | Kualitas peringkat rekomendasi |
-| Binary Crossentropy | Loss Function | Memantau training model |
 
 **Perbandingan Pendekatan:**
 | Aspek | Content-Based | Collaborative |
@@ -100,7 +93,6 @@ Bagian ini memberikan pemahaman mendalam mengenai dataset yang digunakan dalam p
 ## Dataset Overview
 **Nama Dataset:** Indonesia Tourism Destination  
 **Sumber:** Kaggle ([Link Dataset](https://www.kaggle.com/datasets/aprabowo/indonesia-tourism-destination))  
-**Asal Data:** Proyek Capstone Bangkit Academy 2021 (Aplikasi GetLoc)  
 
 **Cakupan Data:**
 - Destinasi wisata di 5 kota besar (Jakarta, Yogyakarta, Semarang, Bandung, Surabaya)
@@ -149,14 +141,14 @@ Bagian ini memberikan pemahaman mendalam mengenai dataset yang digunakan dalam p
 ## Data Exploration Findings
 
 ### User Data Analysis
-**Key Findings:**
-- 300 unique users
-- Complete data (no null values)
-- Contains demographic information
+**Temuan Utama**
+- 300 data unik user
+- Data tidak memiliki missing value
+- Mengandung data demografi
 
 **Sebaran Geografis Pengguna**
 
-Untuk mengetahui sebaran geografis pengguna, dilakukan perhitungan frekuensi setiap lokasi unik dan persentasenya terhadap total pengguna. Berikut adalah lima lokasi dengan jumlah pengguna terbanyak:
+Untuk mengetahui sebaran geografis pengguna, dilakukan perhitungan frekuensi setiap lokasi unik dan persentasenya terhadap total pengguna. Berikut adalah empat lokasi dengan jumlah pengguna terbanyak:
 | Location | Count | Percentage |
 |----------|-------|------------|
 | Bekasi, Jawa Barat | 39 | 13.0% |
@@ -170,7 +162,7 @@ Untuk mengetahui sebaran geografis pengguna, dilakukan perhitungan frekuensi set
 
 **Distribusi Usia**
 
-Statistik deskriptif untuk variabel usia pengguna dihitung untuk memahami profil usia pengg
+Statistik deskriptif untuk variabel usia pengguna dihitung untuk memahami profil usia pengguna
 
 ![image](https://github.com/user-attachments/assets/3b05b88f-f341-4fa0-917a-fda53aaefd75)
 
@@ -179,7 +171,7 @@ Statistik deskriptif untuk variabel usia pengguna dihitung untuk memahami profil
 ### Tourism Data Analysis
 **Kategori Destinasi**
 
-Untuk mengetahui jenis destinasi wisata apa saja yang paling banyak terdapat dalam dataset, dilakukan perhitungan proporsi setiap kategori.
+Untuk mengetahui jenis destinasi wisata apa saja yang paling banyak terdapat dalam dataset, dilakukan perhitungan proporsi setiap kategori. Berikut merupakan tiga kategori teratas dengan persentase paling tinggi.
 
 | Category | Percentage |
 |----------|------------|
@@ -192,6 +184,8 @@ Untuk mengetahui jenis destinasi wisata apa saja yang paling banyak terdapat dal
 **Insight:** Tiga kategori destinasi wisata yang paling dominan dalam dataset adalah 'Taman Hiburan' (30.9%), 'Budaya' (26.8%), dan 'Cagar Alam' (24.3%). Hal ini menunjukkan bahwa sebagian besar destinasi yang tercakup dalam dataset berfokus pada ketiga jenis wisata tersebut. Keseimbangan atau ketidakseimbangan antar kategori ini dapat mempengaruhi variasi rekomendasi yang dihasilkan.
 
 **Kota Destinasi**
+Eksplorasi ini ntuk mengetahui lokasi kota destinasi wisata dari mana saja yang paling banyak terdapat dalam dataset, dilakukan perhitungan proporsi setiap kota. Berikut merupakan tiga kategori teratas dengan persentase paling tinggi.
+
 | City | Percentage |
 |------|------------|
 | Yogyakarta | 28.8% |
@@ -204,6 +198,7 @@ Untuk mengetahui jenis destinasi wisata apa saja yang paling banyak terdapat dal
 
 **Distribusi Harga**
 
+Eksplorasi ini adalah untuk mengetahui sebaran harga tarif destinasi wisata dalam dataset. Berikut adalah statistik deskriptif untuk harga tarif seluruh destinasi.
 | Statistic | Value (IDR) |
 |-----------|-------------|
 | Mean | 24,652 |
@@ -215,6 +210,8 @@ Untuk mengetahui jenis destinasi wisata apa saja yang paling banyak terdapat dal
 **Insight:** Distribusi harga tiket masuk menunjukkan adanya skewness positif yang signifikan. Nilai median (Rp5.000) jauh lebih rendah daripada nilai rata-rata (Rp24.652), yang mengindikasikan bahwa sebagian besar destinasi wisata memiliki harga tiket masuk yang relatif terjangkau, namun terdapat beberapa destinasi dengan harga tiket yang sangat tinggi (hingga Rp650.000) yang menaikkan nilai rata-rata. Visualisasi histogram price_dist.png akan memperjelas hal ini, dimana sebagian besar data akan terkonsentrasi di sisi kiri (harga rendah). Informasi ini penting jika harga akan digunakan sebagai fitur dalam model, karena outlier atau distribusi yang miring mungkin memerlukan perlakuan khusus seperti transformasi logaritmik.
 
 **Rating Distribution:**
+
+Eksplorasi ini adalah untuk mengetahui sebaran rata-rata rating yang diperoleh tiap destinasi wisata dalam dataset. Berikut adalah statistik deskriptif untuk rating seluruh destinasi.
 | Statistic | Value |
 |-----------|-------|
 | Mean | 4.4 |
@@ -222,7 +219,7 @@ Untuk mengetahui jenis destinasi wisata apa saja yang paling banyak terdapat dal
 
 ![Screen Shot 2025-06-01 at 08 36 29](https://github.com/user-attachments/assets/bbb43f1f-8338-4b81-b830-cbdc1079de58)
 
-**Insight:** Distribusi harga tiket masuk menunjukkan adanya skewness positif yang signifikan. Nilai median (Rp5.000) jauh lebih rendah daripada nilai rata-rata (Rp24.652), yang mengindikasikan bahwa sebagian besar destinasi wisata memiliki harga tiket masuk yang relatif terjangkau, namun terdapat beberapa destinasi dengan harga tiket yang sangat tinggi (hingga Rp650.000) yang menaikkan nilai rata-rata. Visualisasi histogram price_dist.png akan memperjelas hal ini, dimana sebagian besar data akan terkonsentrasi di sisi kiri (harga rendah). Informasi ini penting jika harga akan digunakan sebagai fitur dalam model, karena outlier atau distribusi yang miring mungkin memerlukan perlakuan khusus seperti transformasi logaritmik.
+**Insight:** Distribusi rating destinasi wisata ini menunjukkan kecenderungan negatif (skewed ke kiri), yang berarti sebagian besar rating berada di rentang nilai tinggi, sekitar 4.2 hingga 4.8. Hal ini mengindikasikan bahwa banyak pengguna memberikan penilaian positif terhadap destinasi tersebut. Namun, rata-rata rating (mean) yang sebesar 4.4 sedikit lebih rendah dibanding median sebesar 4.5, menandakan ada sejumlah rating rendah yang menarik nilai rata-rata ke bawah. Dengan kata lain, meskipun umumnya destinasi mendapatkan nilai bagus, ada beberapa penilaian kurang memuaskan yang memengaruhi distribusi keseluruhan.
 
 ### Rating Data Analysis
 **Rating Statistics**
@@ -249,12 +246,11 @@ Frekuensi setiap nilai rating (1 hingga 5) dihitung untuk melihat bagaimana rati
 
 **Insight:** Distribusi rating menunjukkan bahwa pengguna paling sering memberikan rating 3 (2.842 kali), diikuti oleh rating 4 (2.672 kali) dan rating 2 (2.538 kali). Rating tertinggi (5) dan terendah (1) lebih jarang diberikan. Rata-rata rating sebesar 3.07 dengan median 3.0 mengindikasikan bahwa secara umum, kecenderungan penilaian pengguna sedikit di atas netral. Standar deviasi sebesar 1.38 menunjukkan adanya variasi yang cukup dalam penilaian yang diberikan oleh pengguna. Pemahaman distribusi rating ini krusial karena merupakan sinyal utama preferensi pengguna yang akan dipelajari oleh model collaborative filtering.
 
-**Matrix Density**
+### Matrix Density
+
 Dengan **total 10.000 rating,** kita dapat menghitung kepadatan matriks rating sebagai 10.000/(300×437) ≈ **7.6%**, yang termasuk sparse namun cukup untuk sistem rekomendasi dasar.
 
-Tentu, berikut adalah terjemahan dari bagian tersebut ke dalam Bahasa Indonesia:
-
-## 🔍 Key Insights
+## 🔍 Ringkasan EDA
 
 1.  **Kualitas Data**:
     * Data pengguna dan data rating lengkap.
@@ -294,11 +290,11 @@ Tentu, berikut adalah terjemahan dari bagian tersebut ke dalam Bahasa Indonesia:
     * Kota Yogyakarta dan Bandung mendominasi dalam hal jumlah destinasi yang tersedia di dataset.
     * Rating yang diberikan pengguna cenderung netral hingga cukup baik, dengan banyak rating berada di angka 3 dan 4.
 
-# ⚙️ Persiapan Data (Data Preparation)
+# ⚙️ Data Preparation
 
-Tahap persiapan data (Data Preparation) merupakan langkah berikutnya setelah pemahaman data (Data Understanding). Pada tahap ini, dataset mentah yang telah dieksplorasi akan diolah dan ditransformasi menjadi format yang sesuai dan optimal untuk tahap pemodelan. Proses ini melibatkan serangkaian teknik untuk membersihkan, mengintegrasikan, dan menstrukturkan data guna meningkatkan kualitas dan relevansinya untuk analisis lebih lanjut. Berikut adalah tahapan persiapan data yang dilakukan secara berurutan:
+Tahap Data Preparation merupakan langkah berikutnya setelah pemahaman data Data Understanding. Pada tahap ini, dataset mentah yang telah dieksplorasi akan diolah dan ditransformasi menjadi format yang sesuai dan optimal untuk tahap pemodelan. Proses ini melibatkan serangkaian teknik untuk membersihkan, mengintegrasikan, dan menstrukturkan data guna meningkatkan kualitas dan relevansinya untuk analisis lebih lanjut. Berikut adalah tahapan persiapan data yang dilakukan secara berurutan:
 
-## 1. Penggabungan Data Rating dengan Informasi Destinasi
+## 1. Menggabungkan Kolom Nama dan Kategori Destinasi Wisata
 Langkah awal dalam persiapan data adalah menggabungkan informasi esensial dari beberapa sumber data menjadi satu dataset yang komprehensif. Dalam konteks ini, data rating pengguna akan diperkaya dengan detail mengenai destinasi wisata.
 
 * **Proses yang Dilakukan:**
@@ -327,13 +323,13 @@ Setelah data digabungkan, langkah selanjutnya adalah melakukan standardisasi pad
         # # ... (penggantian serupa untuk kategori lain) ...
         # tourism_rating['Category'].unique()
         ```
-    Hasilnya, semua kategori kini memiliki format yang konsisten tanpa spasi.
+    Hasilnya, semua kategori kini memiliki format yang konsisten tanpa spasi. Dipastikan juga menggunakan `tourism_rating.info()` bahwa tidak ada null value, yang menandakan bahwa seluruh proses transformasi berhasil.
 
 * **Alasan Dilakukan:**
     * **Memudahkan Pemrosesan Teks:** Format tanpa spasi (menggunakan underscore) membuat setiap nama kategori menjadi satu token tunggal. Ini menyederhanakan proses analisis teks atau *feature engineering* di tahap selanjutnya (misalnya, saat menggunakan kategori dalam model TF-IDF).
     * **Konsistensi dan Keterbacaan:** Standardisasi ini meningkatkan konsistensi data dan mempermudah pembacaan serta penggunaan kategori sebagai fitur dalam model.
 
-## 3. Mengatasi Nilai Hilang (Missing Values) dan Duplikasi Data
+## 3. Mengatasi Missing Values dan Duplikasi Data
 Kualitas data sangat mempengaruhi kinerja model. Oleh karena itu, pemeriksaan dan penanganan nilai hilang serta data duplikat adalah langkah penting.
 
 * **Proses yang Dilakukan (Penanganan Missing Values):**
@@ -385,9 +381,6 @@ Sebagai langkah akhir dalam persiapan data, dibuat salinan kerja dari dataset ya
     * **Salinan Kerja (Working Copy):** Membuat salinan data adalah praktik yang baik untuk menjaga dataset asli yang telah dibersihkan tetap utuh, sementara modifikasi atau eksperimen lebih lanjut dapat dilakukan pada salinan tersebut.
     * **Mempermudah Analisis dan Visualisasi:** Mengurutkan data berdasarkan `Place_Id` dapat mempermudah inspeksi manual data, analisis eksploratif lebih lanjut (misalnya, melihat semua rating untuk destinasi tertentu secara berurutan), dan membantu dalam visualisasi pola rating antar tempat wisata.
     * **Kesiapan untuk Tahap Selanjutnya:** Dataset yang telah dibersihkan dan diorganisir ini dianggap siap untuk tahap *feature engineering* dan proses pembuatan model rekomendasi.
-
-
-Baik, mari kita susun bagian **Pemodelan (Modeling)** untuk laporan proyek Anda, dimulai dengan pendekatan *Content-Based Filtering* berdasarkan informasi yang telah Anda berikan.
 
 # 🧮 Modeling
 
@@ -453,7 +446,7 @@ Inti dari CBF adalah representasi fitur item dalam format numerik yang dapat dio
 * **Alasan Dilakukan:**
     TF-IDF mengubah data teks kategori menjadi representasi vektor numerik. Meskipun dalam kasus ini setiap destinasi hanya memiliki satu kategori (sehingga TF-IDF berperilaku mirip *one-hot encoding*), penggunaan TF-IDF adalah pendekatan standar yang fleksibel jika di masa depan fitur teks yang lebih kompleks (seperti deskripsi) ingin disertakan. Matriks numerik ini memungkinkan perhitungan matematis untuk kesamaan antar destinasi.
 
-### 4. Perhitungan Kemiripan Destinasi dengan Cosine Similarity
+### 4. Perhitungan Kemiripan Antar Destinasi dengan Cosine Similarity
 Setelah destinasi direpresentasikan sebagai vektor TF-IDF, langkah selanjutnya adalah menghitung kemiripan antar semua pasangan destinasi.
 
 * **Proses yang Dilakukan:**
@@ -471,7 +464,7 @@ Setelah destinasi direpresentasikan sebagai vektor TF-IDF, langkah selanjutnya a
 * **Alasan Dilakukan:**
     *Cosine Similarity* adalah metrik yang umum digunakan untuk mengukur kesamaan antara dua vektor dalam ruang multidimensi. Metrik ini efektif untuk data tekstual yang telah divektorisasi. Matriks `cosine_sim_df` menjadi dasar bagi model CBF untuk menemukan destinasi yang paling mirip dengan destinasi input.
 
-### 5. Implementasi Fungsi Rekomendasi
+### 5. Implementasi Fungsi Rekomendasi Destinasi Wisata
 Untuk menghasilkan rekomendasi, sebuah fungsi khusus dibuat.
 
 * **Proses yang Dilakukan:**
@@ -504,9 +497,36 @@ Untuk menghasilkan rekomendasi, sebuah fungsi khusus dibuat.
    5    Cibubur Garden Diary (Cibugary)          | Cagar_Alam          
    ------------------------------------------------------------
     ```
-    Hasil ini menunjukkan bahwa sistem berhasil merekomendasikan lima destinasi lain yang juga berkategori 'Bahari', sesuai dengan kategori 'Pantai Ancol'.
+    Ketika diuji dengan memasukkan ID Destinasi 400, sistem berhasil mengidentifikasi bahwa destinasi tersebut adalah Hutan Bambu Keputih yang termasuk dalam kategori Cagar_Alam. Berdasarkan informasi ini, sistem kemudian memberikan rekomendasi lima destinasi lain yang memiliki kategori serupa, yaitu Cagar_Alam. Rekomendasi yang dihasilkan mencerminkan kemampuan model untuk menghubungkan destinasi baru dengan destinasi lain yang serupa dari segi kategori, sehingga membantu pengguna menemukan tempat wisata dengan karakteristik dan tema yang konsisten sesuai preferensi awal mereka. Hal ini menunjukkan efektivitas model content-based filtering dalam menyediakan rekomendasi yang relevan dan sesuai konteks kategori destinasi yang diminati.
 
-### 6. Kelebihan dan Kekurangan Content-Based Filtering
+### 6. Ringkasan Hyperparameter Model Content Based Filtering
+
+Walaupun **tidak menyetel secara eksplisit**, dalam tahap **Content-Based Filtering** menggunakan **TF-IDF + Cosine Similarity**, memang ada beberapa **hyperparameter**, meskipun banyak yang secara implisit menggunakan nilai default yang tetap memengaruhi performa sistem rekomendasi berbasis konten. Berikut hyperparameter defaultnya:
+
+#### 1. **TF-IDF Vectorizer (`TfidfVectorizer`)**
+
+| Hyperparameter | Nilai (default jika tidak disebut) | Penjelasan                                                  |
+| -------------- | ---------------------------------- | ----------------------------------------------------------- |
+| `analyzer`     | `'word'` (default)                 | Unit analisis (kata)                                        |
+| `lowercase`    | `True` (default)                   | Mengubah semua teks menjadi huruf kecil                     |
+| `stop_words`   | `None` (default)                   | Tidak menghapus stopwords (bisa diatur ke `'english'`)      |
+| `ngram_range`  | `(1,1)` (default)                  | Menggunakan unigram (1 kata)                                |
+| `max_df`       | `1.0` (default)                    | Mengabaikan kata yang muncul di lebih dari 100% dokumen     |
+| `min_df`       | `1` (default)                      | Mengabaikan kata yang muncul di kurang dari 1 dokumen       |
+| `max_features` | `None` (default)                   | Tidak ada batas jumlah fitur                                |
+| `norm`         | `'l2'` (default)                   | Normalisasi L2 pada setiap vektor TF-IDF                    |
+| `use_idf`      | `True` (default)                   | Mengaktifkan pembobotan inverse document frequency          |
+| `smooth_idf`   | `True` (default)                   | Menambahkan 1 ke dokument frequency untuk menghindari div/0 |
+| `sublinear_tf` | `False` (default)                  | Tidak menggunakan sublinear scaling pada tf                 |
+
+#### 2. **Cosine Similarity (`cosine_similarity`)**
+
+| Hyperparameter | Nilai (default)  | Penjelasan                                            |
+| -------------- | ---------------- | ----------------------------------------------------- |
+| `dense_output` | `True` (default) | Output sebagai array numpy biasa, bukan sparse matrix |
+
+
+### 7. Kelebihan dan Kekurangan Content-Based Filtering
 Pendekatan CBF memiliki karakteristiknya sendiri:
 
 * **Kelebihan:**
@@ -520,8 +540,6 @@ Pendekatan CBF memiliki karakteristiknya sendiri:
     * **Terbatasnya Serendipitas (*Limited Serendipity*):** Cenderung merekomendasikan item yang sangat mirip dengan apa yang sudah diketahui atau disukai pengguna. Ini mengurangi peluang pengguna untuk menemukan item yang menarik dari kategori atau jenis yang benar-benar baru bagi mereka.
     * ***Filter Bubble* atau *Overspecialization*:** Pengguna mungkin terjebak dalam rekomendasi yang monoton dan hanya berasal dari satu jenis kategori yang sama berulang kali.
     * **Masalah *User Cold Start*:** Meskipun dapat menangani item baru, CBF tetap memerlukan informasi awal mengenai preferensi pengguna (misalnya, satu destinasi yang disukai) untuk dapat mulai memberikan rekomendasi.
-
-Pendekatan *Content-Based Filtering* ini menjadi salah satu pilar dalam sistem rekomendasi yang dikembangkan, memberikan dasar rekomendasi berdasarkan karakteristik eksplisit dari destinasi wisata.
 
 ## Solusi 2: Collaborative Filtering (CF) dengan Embedding Deep Learning
 Pendekatan *Collaborative Filtering* (CF) bekerja berdasarkan ide bahwa pengguna yang memiliki preferensi serupa di masa lalu cenderung akan menyukai item yang sama di masa depan. Berbeda dengan CBF yang fokus pada fitur item, CF fokus pada pola interaksi pengguna-item (misalnya, rating yang diberikan). Dalam proyek ini, CF diimplementasikan menggunakan model *deep learning* yang memanfaatkan teknik *embedding* untuk mempelajari representasi laten (tersembunyi) dari pengguna dan destinasi.
@@ -550,7 +568,8 @@ Tahap awal dalam pengembangan model CF adalah mempersiapkan data interaksi pengg
 * **Alasan Dilakukan:**
     * Model *neural network*, khususnya *embedding layers* di TensorFlow/Keras, memerlukan input berupa indeks integer yang dimulai dari 0. Encoding memastikan ID pengguna dan destinasi sesuai dengan format ini.
     * *Mapping dictionary* diperlukan untuk mengkonversi ID asli ke format yang dibutuhkan model dan sebaliknya, untuk menginterpretasikan hasil prediksi.
-    * Mengetahui jumlah unik pengguna dan destinasi penting untuk menentukan ukuran *embedding layers*. Informasi skala rating (min/max) digunakan untuk normalisasi nilai target (rating).
+    * Mengetahui jumlah unik pengguna dan destinasi penting untuk menentukan ukuran *embedding layers*.
+    * Informasi skala rating (min/max) digunakan untuk normalisasi nilai target (rating).
 
 ### 2. Pembagian Data Latih dan Validasi (Train-Validation Split)
 Dataset kemudian diacak dan dibagi menjadi data latih (*training set*) dan data validasi (*validation set*).
@@ -558,7 +577,7 @@ Dataset kemudian diacak dan dibagi menjadi data latih (*training set*) dan data 
 * **Proses yang Dilakukan:**
     1.  Seluruh dataset `df` diacak secara acak (menggunakan `df.sample(frac=1, random_state=42)`) untuk memastikan tidak ada bias urutan.
     2.  Variabel input `x` dibentuk dari pasangan kolom `user_encoded` dan `place_encoded`.
-    3.  Variabel target `y` (rating) dinormalisasi ke rentang [0, 1] menggunakan Min-Max Scaling: $y = (Place_Ratings - min_rating) / (max_rating - min_rating)$.
+    3.  Variabel target `y` (rating) dinormalisasi ke rentang [0, 1] menggunakan Min-Max Scaling: $y = (Place Ratings - min rating) / (max rating - min rating)$.
         ```python
         # x = df[['user_encoded', 'place_encoded']].values
         # y = df['Place_Ratings'].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
@@ -594,7 +613,6 @@ Sebuah model *neural network* kustom dirancang menggunakan Keras API untuk melak
         * Mengambil vektor *embedding* dan bias untuk pengguna dan destinasi.
         * Melakukan operasi *dot product* antara vektor *embedding* pengguna dan destinasi untuk menangkap interaksi atau kesesuaian preferensi.
         * Menambahkan bias pengguna dan bias destinasi ke hasil *dot product*.
-        * Mengaktifkan Dropout layers untuk mencegah overfitting.
         * Hasil akhir dilewatkan melalui fungsi aktivasi sigmoid untuk menghasilkan prediksi rating dalam rentang [0, 1].
 
 * **Alasan Arsitektur Ini:**
@@ -630,7 +648,7 @@ Model yang telah dirancang kemudian dikompilasi dan dilatih.
         # )
         ```
     * **Observasi Pelatihan:**
-        Pelatihan menunjukkan penurunan *loss* yang baik pada epoch-epoch awal. *Callback* `ReduceLROnPlateau` terpicu beberapa kali, mengurangi *learning rate* untuk membantu model menemukan konvergensi yang lebih baik. Akhirnya, `EarlyStopping` menghentikan pelatihan pada epoch ke-22 (berdasarkan deskripsi naratif, epoch terbaik adalah ke-12 dimana bobot dikembalikan), mencegah *overfitting* lebih lanjut. Pada epoch terbaik (epoch 12), model mencapai `training loss` sekitar 0.1161 dan `validation loss` sekitar 0.1245, dengan RMSE sekitar 0.35 pada skala rating yang dinormalisasi.
+        Pelatihan menunjukkan penurunan *loss* yang baik pada epoch-epoch awal. *Callback* `ReduceLROnPlateau` terpicu beberapa kali, mengurangi *learning rate* untuk membantu model menemukan konvergensi yang lebih baik. Akhirnya, `EarlyStopping` menghentikan pelatihan pada epoch ke-25 (berdasarkan deskripsi naratif, epoch terbaik adalah ke-15 dimana bobot dikembalikan), mencegah *overfitting* lebih lanjut. Pada epoch terbaik (epoch 15), model mencapai `training loss` sekitar 0.1144 dan `validation loss` sekitar 0.1247, dengan RMSE sekitar 0.35 pada skala rating yang dinormalisasi.
 
 * **Alasan Dilakukan:**
     Proses kompilasi mendefinisikan bagaimana model akan belajar (optimizer, loss) dan bagaimana performanya akan diukur (metrics). Pelatihan iteratif memungkinkan model untuk menyesuaikan bobot *embedding* dan biasnya agar dapat memprediksi rating seakurat mungkin berdasarkan data historis. Penggunaan *callbacks* membantu mengoptimalkan proses pelatihan dan meningkatkan kemampuan generalisasi model.
@@ -678,9 +696,49 @@ Setelah model dilatih, model tersebut dapat digunakan untuk memberikan rekomenda
     9    Pantai Depok Jogja                | Bahari              
     10   Obyek Wisata Goa Kreo             | Cagar_Alam
     ```
-    Output ini menunjukkan kemampuan model *deep learning* dalam memberikan rekomendasi yang beragam dan relevan berdasarkan pola preferensi yang dipelajari dari interaksi pengguna.
+    Output rekomendasi ini menunjukkan bagaimana model collaborative filtering dapat memahami preferensi pengguna berdasarkan histori interaksi dan memberikan rekomendasi destinasi wisata yang relevan dan beragam. Dari daftar 5 destinasi yang sudah dikunjungi dan dinilai tinggi oleh pengguna dengan ID 1, terlihat bahwa pengguna menyukai berbagai kategori seperti Taman Hiburan, Budaya, dan Cagar Alam. Model kemudian merekomendasikan 10 destinasi baru yang belum dikunjungi, namun sesuai dengan pola preferensi tersebut, mencakup destinasi dari kategori yang sama seperti Cagar Alam, Taman Hiburan, dan Budaya, serta menambahkan kategori Bahari yang mungkin juga relevan. Rekomendasi ini menunjukkan kemampuan model dalam menangkap kesukaan pengguna terhadap beragam tipe destinasi dan memberikan opsi yang berpotensi menarik bagi pengguna, sehingga meningkatkan peluang kepuasan dan keterlibatan lebih lanjut. Secara keseluruhan, output ini memperlihatkan efektivitas model deep learning dalam mempersonalisasi rekomendasi berbasis data interaksi historis, menghasilkan daftar destinasi yang variatif namun tetap relevan dengan preferensi unik setiap pengguna.
 
-### 6. Kelebihan dan Kekurangan Collaborative Filtering (dengan Deep Learning)
+### 6. Ringkasan Hyperparameter Model Collaborative Filtering
+
+#### 1. **Embedding-related Hyperparameters**
+
+| Hyperparameter           | Nilai                         | Penjelasan                                       |
+| ------------------------ | ----------------------------- | ------------------------------------------------ |
+| `embedding_size`         | `8` (saat inisialisasi)       | Ukuran vektor embedding untuk user dan destinasi |
+| `embeddings_initializer` | `'he_normal'`                 | Metode inisialisasi bobot embedding              |
+| `embeddings_regularizer` | `keras.regularizers.l2(1e-4)` | Regularisasi L2 untuk mencegah overfitting       |
+
+#### 2. **Model Training Hyperparameters**
+
+| Hyperparameter  | Nilai                       | Penjelasan                              |
+| --------------- | --------------------------- | --------------------------------------- |
+| `loss`          | `MeanSquaredError()`        | Fungsi loss untuk regresi rating        |
+| `optimizer`     | `Adam(learning_rate=0.001)` | Optimizer yang digunakan                |
+| `learning_rate` | `0.001`                     | Learning rate awal untuk Adam optimizer |
+| `metrics`       | `RootMeanSquaredError()`    | Metrik evaluasi performa model          |
+
+**Callback Hyperparameters**
+
+#### 3. **EarlyStopping**
+
+| Hyperparameter         | Nilai        | Penjelasan                                  |
+| ---------------------- | ------------ | ------------------------------------------- |
+| `monitor`              | `'val_loss'` | Metrik yang dipantau                        |
+| `patience`             | `10`         | Berhenti jika tidak membaik selama 10 epoch |
+| `verbose`              | `1`          | Menampilkan info saat early stop terjadi    |
+| `restore_best_weights` | `True`       | Mengembalikan bobot terbaik saat pelatihan  |
+
+#### 4. **ReduceLROnPlateau**
+
+| Hyperparameter | Nilai        | Penjelasan                             |
+| -------------- | ------------ | -------------------------------------- |
+| `monitor`      | `'val_loss'` | Metrik yang dipantau                   |
+| `factor`       | `0.1`        | Pengurangan learning rate saat stagnan |
+| `patience`     | `5`          | Tunggu 5 epoch sebelum menurunkan LR   |
+| `verbose`      | `1`          | Menampilkan info saat LR diturunkan    |
+| `min_lr`       | `0.00001`    | Batas bawah learning rate              |
+
+### 7. Kelebihan dan Kekurangan Collaborative Filtering (dengan Deep Learning)
 
 * **Kelebihan:**
     * **Tidak Memerlukan Fitur Item Manual:** Model belajar langsung dari interaksi pengguna-item (rating), sehingga tidak memerlukan *feature engineering* yang ekstensif pada konten item.
@@ -694,76 +752,121 @@ Setelah model dilatih, model tersebut dapat digunakan untuk memberikan rekomenda
     * ***Popularity Bias*:** Model mungkin cenderung merekomendasikan item-item populer yang memiliki banyak interaksi, sehingga item yang kurang populer (namun mungkin relevan) menjadi kurang terwakili.
     * **Kurang Transparan (*Less Explainable*):** Dibandingkan CBF, rekomendasi dari model *deep learning* berbasis *embedding* seringkali lebih sulit untuk dijelaskan ("black box"), karena didasarkan pada fitur-fitur laten yang dipelajari secara otomatis.
 
-Pendekatan *Collaborative Filtering* berbasis *deep learning* ini melengkapi CBF dengan menawarkan personalisasi yang didorong oleh perilaku kolektif pengguna, mampu menangkap nuansa preferensi yang lebih halus.
-
-
-
 # 💯 Evaluation
-
-Tahap evaluasi bertujuan untuk menilai performa model dalam mengklasifikasikan tingkat risiko kesehatan mental berdasarkan fitur-fitur yang tersedia. Evaluasi dilakukan menggunakan metrik standar untuk kasus klasifikasi, yaitu **akurasi**, **precision**, **recall**, dan **F1-score**. Selain itu, **confusion matrix** digunakan untuk melihat distribusi prediksi model terhadap kelas-kelas yang ada.
+Tahap evaluasi model bertujuan untuk menilai sejauh mana model-model sistem rekomendasi yang telah dikembangkan mampu mencapai tujuan yang ditetapkan dan menyelesaikan permasalahan yang ada. Pada tahap ini, kita akan mengukur kinerja kedua pendekatan model—*Content-Based Filtering* dan *Collaborative Filtering*—menggunakan serangkaian metrik evaluasi yang relevan dengan tugas prediksi rating dan kualitas daftar rekomendasi Top-N.
 
 ## Metrik Evaluasi yang Digunakan
 
-- **Akurasi** mengukur proporsi prediksi yang benar dari keseluruhan prediksi.
-```
-Accuracy = (True Positive + True Negative) / (True Positive + True Negative + False Positive + False Negative)
-```
+Berikut adalah metrik-metrik yang digunakan untuk mengevaluasi performa model dalam proyek ini:
 
-- **Precision** menghitung seberapa banyak prediksi positif yang benar.
-```
-Precision = True Positive / (True Positive + False Positive)
-```
+| Metric            | Type                             | Penggunaan                                                                                                |
+|-------------------|----------------------------------|-----------------------------------------------------------------------------------------------------------|
+| MSE               | Loss Function / Regression       | Mengukur rata-rata kuadrat perbedaan antara nilai aktual dan prediksi; digunakan sebagai fungsi kerugian untuk memantau dan mengoptimalkan proses pelatihan model *neural network*. Formula: $$\frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2$$ |
+| RMSE              | Regression                       | Mengukur akar dari MSE, sehingga memiliki skala yang sama dengan variabel target (rating). Memberikan gambaran rata-rata magnitudo error prediksi, dengan bobot lebih besar pada error yang lebih besar. Formula: $$\sqrt{\frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2}$$ |
+| MAE               | Regression                       | Mengukur rata-rata selisih absolut antara nilai aktual dan prediksi. Memberikan gambaran langsung tentang besaran rata-rata error tanpa mempedulikan arahnya dan kurang sensitif terhadap *outlier* dibandingkan RMSE. Formula:  $$\frac{1}{N} \sum_{i=1}^{N} |y_i - \hat{y}_i|$$ |
+| Confusion Matrix  | Classification                   | Digunakan untuk mengevaluasi model klasifikasi (dalam kasus CBF yang dievaluasi sebagai tugas klasifikasi kategori). Menyajikan tabel True Positives (TP), True Negatives (TN), False Positives (FP), dan False Negatives (FN) untuk setiap kelas. |
+| Precision@K       | Ranking Metric                   | Dari K item teratas yang direkomendasikan, berapa proporsi yang benar-benar relevan bagi pengguna. Formula: $$\frac{\text{Jumlah item relevan dalam K rekomendasi}}{\text{K}}$$ |
+| Recall@K          | Ranking Metric                   | Dari semua item yang relevan bagi pengguna, berapa proporsi yang berhasil ditemukan dan direkomendasikan dalam K item teratas. Formula: $$\frac{\text{Jumlah item relevan dalam K rekomendasi}}{\text{Total item relevan untuk pengguna}}$$ |
+| F1-Score@K        | Ranking Metric                   | Rata-rata harmonik dari Precision@K dan Recall@K, memberikan ukuran tunggal yang menyeimbangkan kedua metrik tersebut. Formula: $$2 \cdot \frac{Precision@K \cdot Recall@K}{Precision@K + Recall@K}$$ |
 
-- **Recall** mengukur kemampuan model dalam menangkap seluruh data positif yang benar.
-```
-Recall = True Positive / (True Positive + False Negative)
-```
+Di mana $N$ adalah jumlah sampel, $y_i$ adalah nilai aktual, dan $\hat{y}_i$ adalah nilai prediksi. Untuk semua metrik error (MSE, RMSE, MAE), nilai yang lebih rendah menunjukkan performa yang lebih baik. Untuk metrik ranking (Precision@K, Recall@K, F1-Score@K), nilai yang lebih tinggi menunjukkan performa yang lebih baik.
 
-- **F1-Score** adalah rata-rata harmonik dari precision dan recall, memberikan keseimbangan di antara keduanya.
-```
-F1-Score = 2 * (Precision * Recall) / (Precision + Recall)
-```
+## Evaluasi Model Content-Based Filtering (CBF)
 
-## Hasil Evaluasi pada Data Latih
+Evaluasi untuk model *Content-Based Filtering* (CBF) dalam proyek ini difokuskan pada kemampuannya untuk mengenali dan mengklasifikasikan destinasi wisata berdasarkan kategorinya, dengan studi kasus pada kategori 'Budaya'.
 
-| Model             | Akurasi | Precision (avg)  | Recall (avg)  | F1-score (avg) |
-|-------------------|---------|------------------|---------------|----------------|
-| KNN               | 0.96    | 0.96             | 0.96          | 0.96           |
-| Decision Tree     | 1.00    | 1.00             | 1.00          | 1.00           |
-| Random Forest     | 1.00    | 1.00             | 1.00          | 1.00           |
-| SVM               | 0.99    | 0.99             | 0.99          | 0.99           |
-| Naive Bayes       | 0.88    | 0.87             | 0.87          | 0.87           |
+* **Konteks dan Proses Evaluasi:**
+    Label *ground truth* dibuat dengan memberikan nilai 1 untuk destinasi yang termasuk dalam kategori 'Budaya' dan 0 untuk kategori lainnya. Sistem CBF kemudian memprediksi kategori sebuah destinasi dengan cara mencari destinasi lain yang memiliki *cosine similarity* tertinggi dengannya (berdasarkan fitur kategori yang telah di-vektorisasi menggunakan TF-IDF). Kategori dari destinasi paling mirip tersebut kemudian diambil sebagai kategori prediksi untuk destinasi input. Proses ini pada dasarnya menguji apakah sebuah destinasi 'Budaya' akan paling mirip dengan destinasi 'Budaya' lainnya.
 
-**Interpretasi:**
-Model seperti **Decision Tree** dan **Random Forest** mencapai akurasi 100% pada data latih, mengindikasikan kemungkinan **overfitting**, yakni ketika model terlalu menghafal data tanpa kemampuan generalisasi yang baik. Model **SVM** dan **KNN** juga menunjukkan performa tinggi (masing-masing 99% dan 96%), sementara **Naive Bayes** sedikit lebih rendah (88%).
+* **Metrik yang Digunakan:**
+    Hasil prediksi dibandingkan dengan *ground truth* menggunakan metrik `precision`, `recall`, `f1-score`, dan `accuracy` yang dihitung melalui fungsi `classification_report` dari pustaka `scikit-learn`.
+    * **Precision** (TP / (TP + FP)): Mengukur proporsi prediksi positif ('Budaya') yang benar-benar 'Budaya'.
+    * **Recall** (TP / (TP + FN)): Mengukur proporsi kasus 'Budaya' aktual yang berhasil diidentifikasi oleh model.
+    * **F1-Score**: Rata-rata harmonik dari precision dan recall.
+    * **Accuracy** ((TP + TN) / Total): Mengukur proporsi total prediksi yang benar (baik 'Budaya' maupun 'Non-Budaya').
 
-## Evaluasi pada Data Uji
+* **Hasil dan Interpretasi:**
+    ```
+    # Diasumsikan output dari classification_report adalah:
+    #               precision    recall  f1-score   support
+    #            0       1.00      1.00      1.00       320  (Non-Budaya)
+    #            1       1.00      1.00      1.00       117  (Budaya)
+    #     accuracy                           1.00       437
+    #    macro avg       1.00      1.00      1.00       437
+    # weighted avg       1.00      1.00      1.00       437
+    ```
+    Hasil evaluasi menunjukkan performa yang **sempurna** dengan nilai `precision`, `recall`, dan `f1-score` semua mencapai **1.00 (100%)** untuk kedua kelas (0 untuk 'Non-Budaya' dan 1 untuk 'Budaya'). `Accuracy` keseluruhan juga mencapai **1.00**.
+    Ini berarti model CBF, dengan logika prediksi yang digunakan, mampu dengan sempurna mengidentifikasi destinasi kategori 'Budaya' maupun 'Non-Budaya' tanpa kesalahan dalam konteks dataset dan tugas evaluasi ini. `Support` menunjukkan jumlah sampel untuk masing-masing kelas (320 untuk 'Non-Budaya' dan 117 untuk 'Budaya') dari total 437 destinasi yang diuji.
 
-| Model              | Akurasi | Precision (avg) | Recall (avg) | F1-score (avg) |
-|-------------------|---------|------------------|---------------|----------------|
-| KNN               | 0.94    | 0.94             | 0.92          | 0.93           |
-| Decision Tree     | 1.00    | 1.00             | 1.00          | 1.00           |
-| Random Forest     | 0.98    | 0.98             | 0.98          | 0.98           |
-| SVM               | 0.98    | 0.98             | 0.98          | 0.98           |
-| Naive Bayes       | 0.87    | 0.86             | 0.85          | 0.85           |
+    Perlu dicatat bahwa skor sempurna ini sangat dipengaruhi oleh sifat deterministik dari evaluasi: karena kemiripan antar destinasi dalam CBF ini hanya didasarkan pada satu kategori per destinasi (skor similarity 1 jika kategori sama, 0 jika berbeda), maka destinasi dengan kategori 'Budaya' akan selalu memiliki kemiripan tertinggi dengan destinasi 'Budaya' lainnya. Evaluasi ini lebih mengonfirmasi konsistensi logika pencocokan kategori daripada kemampuan prediktif pada konten yang lebih kompleks atau ambigu.
 
-**Interpretasi:**
+## Evaluasi Model Collaborative Filtering (CF)
 
-- **Decision Tree** menunjukkan akurasi sempurna bahkan di data uji, namun ini jarang terjadi dan mengindikasikan kemungkinan **overfitting**, meskipun hasilnya sangat baik.
+Evaluasi model *Collaborative Filtering* (CF) berbasis *deep learning* dilakukan dalam beberapa aspek: pemantauan performa selama pelatihan, akurasi prediksi rating pada data validasi, dan kualitas daftar rekomendasi Top-N.
 
-- **Random Forest** dan **SVM** menampilkan hasil sangat tinggi dan konsisten (98%), menjadikannya kandidat kuat karena mampu menangkap pola kompleks sekaligus menjaga generalisasi yang baik.
+### 1. Evaluasi Performa Selama Pelatihan (RMSE Plot)
+Metrik *Root Mean Squared Error* (RMSE) dipantau pada setiap epoch untuk data latih (`train`) dan data validasi (`test`/`validation`) guna memahami dinamika proses pembelajaran model.
+$$RMSE = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2}$$
 
-- **KNN** menurun sedikit pada recall, terutama di kelas minoritas, namun tetap menunjukkan generalisasi yang solid dengan akurasi 94%.
+![Screen Shot 2025-06-01 at 17 30 38](https://github.com/user-attachments/assets/33652065-e818-468d-9748-a42b74c6092a)
 
-- **Naive Bayes** mencatat akurasi terendah, kemungkinan karena asumsi independensi antar fitur tidak sepenuhnya berlaku pada data ini.
+* **Visualisasi dan Interpretasi Kurva RMSE:**
+    (Mengacu pada grafik `plt.plot(history.history['root_mean_squared_error'])` dkk.)
+    * **Kurva RMSE Pelatihan (misalnya, garis biru):** Menunjukkan penurunan nilai RMSE seiring bertambahnya epoch. Hal ini mengindikasikan bahwa model berhasil mempelajari pola dari data pelatihan, dan kesalahannya dalam memprediksi rating pada data yang sudah dilihatnya semakin mengecil.
+    * **Kurva RMSE Validasi (misalnya, garis oranye):** Menggambarkan kemampuan generalisasi model pada data baru. Pada grafik yang dihasilkan (sebagaimana dideskripsikan dalam narasi pelatihan), RMSE validasi awalnya menurun, kemudian cenderung stagnan bahkan sedikit meningkat setelah beberapa epoch (misalnya, sekitar epoch 12), sementara RMSE pelatihan terus menurun. Kesenjangan (*gap*) yang melebar antara kurva pelatihan dan validasi, atau peningkatan pada RMSE validasi, adalah indikasi *overfitting*. Stagnasi RMSE validasi menunjukkan bahwa model telah mencapai batas kemampuannya untuk belajar lebih lanjut dari data dengan konfigurasi saat itu. Implementasi *callbacks* seperti `EarlyStopping` dan `ReduceLROnPlateau` (yang menghentikan pelatihan pada epoch ke-25 dan mengembalikan bobot dari epoch ke-15) sangat penting untuk mendapatkan model dengan generalisasi terbaik.
+
+### 2. Perhitungan RMSE dan MAE pada Data Validasi
+Setelah pelatihan selesai dan model dengan bobot terbaik (berdasarkan `val_loss` terendah) diperoleh, performa akhirnya dievaluasi pada data validasi menggunakan RMSE dan MAE pada rating yang telah dinormalisasi (skala 0-1).
+1.  **Mean Absolute Error (MAE)**: Mengukur rata-rata selisih absolut antara rating aktual dan prediksi.
+    $$MAE = \frac{1}{N} \sum_{i=1}^{N} |y_i - \hat{y}_i|$$
+2.  **Root Mean Squared Error (RMSE)**: Telah dijelaskan sebelumnya.
+
+* **Hasil dan Interpretasi:**
+    Berdasarkan output yang diperoleh:
+    * **RMSE: 0.3498**
+    * **MAE: 0.3012**
+
+    Nilai-nilai ini, yang diukur pada skala rating ternormalisasi [0, 1], memberikan ukuran kuantitatif dari error prediksi model. RMSE sebesar 0.3498 menunjukkan bahwa, secara rata-rata dengan penalti lebih pada error besar, prediksi rating model memiliki simpangan sekitar nilai tersebut dari rating aktual ternormalisasi. MAE sebesar 0.3012 mengindikasikan bahwa rata-rata selisih absolut prediksi dari nilai sebenarnya adalah sekitar 0.3012. Untuk mendapatkan interpretasi yang lebih intuitif pada skala rating asli (1-5), nilai-nilai ini perlu dikonversi kembali. Namun, untuk perbandingan dan evaluasi relatif, metrik pada skala ternormalisasi ini sudah cukup informatif. Semakin rendah kedua nilai ini, semakin akurat model dalam memprediksi rating.
+
+### 3. Evaluasi Kualitas Rekomendasi Top-N (Precision@K, Recall@K, F1-Score@K)
+Selain akurasi prediksi rating, evaluasi performa rekomendasi Top-N sangat penting untuk model *collaborative filtering*. Untuk evaluasi ini, digunakan K=10 (Top-10 rekomendasi). Item dianggap "relevan" jika rating aktualnya pada data validasi mencapai ambang batas tertentu (dalam proyek ini, rating asli $\geq 3$, yang setara dengan 0.5 pada skala ternormalisasi 0-1).
+
+* **Precision@10**: Dari 10 destinasi yang direkomendasikan, berapa proporsi yang benar-benar relevan.
+* **Recall@10**: Dari semua destinasi yang relevan untuk seorang pengguna, berapa proporsi yang berhasil muncul dalam 10 rekomendasi teratas.
+* **F1-Score@10**: Rata-rata harmonik dari Precision@10 dan Recall@10.
+
+* **Hasil dan Interpretasi:**
+    Berdasarkan hasil perhitungan metrik evaluasi Top-10:
+    * **Recall@10: 0.9673**
+    * **Precision@10: 0.4044**
+    * **F1-Score@10: 0.5703**
+
+    Interpretasi hasil ini adalah sebagai berikut:
+    * **Recall@10 yang sangat tinggi (0.9673)** menunjukkan bahwa model sangat efektif dalam menemukan dan menyajikan sebagian besar (sekitar 96.73%) destinasi yang kemungkinan besar akan disukai oleh pengguna (berdasarkan ambang batas relevansi). Ini berarti pengguna memiliki peluang kecil untuk melewatkan destinasi favorit potensial mereka dari daftar rekomendasi.
+    * **Precision@10 sebesar 0.4044** mengindikasikan bahwa dari 10 destinasi teratas yang direkomendasikan, rata-rata sekitar 40.44% (atau sekitar 4 dari 10 destinasi) adalah destinasi yang benar-benar relevan. Meskipun nilai ini menunjukkan kemampuan model yang cukup baik dalam memprioritaskan item relevan, masih terdapat ruang untuk meningkatkan ketepatan sasaran rekomendasi.
+    * **F1-Score@10 sebesar 0.5703** memberikan keseimbangan antara presisi dan recall. Dalam kasus ini, F1-Score cukup dipengaruhi oleh nilai Recall yang tinggi, menandakan bahwa model cenderung lebih inklusif (memastikan banyak item relevan masuk rekomendasi) dengan risiko beberapa item yang direkomendasikan mungkin kurang relevan.
+
+Secara keseluruhan, model *collaborative filtering* menunjukkan performa yang menjanjikan, terutama dalam hal cakupan (Recall). Upaya di masa depan dapat difokuskan pada peningkatan presisi untuk lebih mempertajam relevansi item-item di posisi teratas rekomendasi.
 
 # 📋 Kesimpulan
 
-Berdasarkan evaluasi:
-- **Decision Tree** memiliki akurasi sempurna, baik saat dites menggunakan data latih maupun data uji. Perlu ditinjau lebih lanjut karena berpotensi overfitting.
-- **Random Forest** dan **SVM** menjadi dua alternatif model terbaik karena menghasilkan metrik yang tinggi, seimbang, dan konsisten.
+Proyek pengembangan sistem rekomendasi destinasi wisata Indonesia ini telah berhasil mengimplementasikan dan mengevaluasi dua pendekatan utama: *Content-Based Filtering* (CBF) dan *Collaborative Filtering* (CF) berbasis *deep learning*. Evaluasi menunjukkan bahwa kedua model memiliki karakteristik dan potensi yang berbeda dalam menyelesaikan permasalahan dan mencapai tujuan bisnis yang telah ditetapkan.
 
-## Rekomendasi:
-- Model **Decision Tree** cocok digunakan jika data memiliki dimensionalitas (jumlah fitur) dan varians antar fitur yang rendah. Model ini mudah dipahami dan diinterpretasikan, tetapi performanya dapat menurun secara signifikan ketika dihadapkan dengan data yang memiliki variansi tinggi atau mengandung banyak noise.
-- Model **Random Forest** adalah pilihan yang lebih seimbang dan umumnya lebih andal. Model ini menghasilkan akurasi yang tinggi dan konsisten, serta cukup robust terhadap data berdimensionalitas tinggi maupun varians fitur yang besar. Selain itu, Random Forest lebih toleran terhadap outlier dan noise kecil, sehingga cocok digunakan untuk data dunia nyata yang sering kali tidak bersih atau memiliki ketidakteraturan.
-- Sama seperti **Random Forest**, **SVM** juga menawarkan performa yang baik dan dapat menangani data dengan margin yang kompleks. Namun, model ini relatif lebih kompleks untuk dilatih, terutama pada dataset besar dan berdimensionalitas tinggi. Selain itu, SVM cenderung kurang toleran terhadap outlier dan perbedaan distribusi antara data latih dan data aktual di lapangan, yang dapat menyebabkan penurunan performa jika data tidak distandarkan atau dibersihkan dengan baik.
+* **Model Content-Based Filtering (CBF):**
+    * Model CBF menunjukkan **akurasi sempurna (1.00)** dalam tugas evaluasi spesifiknya, yaitu mengklasifikasikan destinasi berdasarkan kategori 'Budaya'. Hasil ini mengonfirmasi konsistensi logika internal model dalam mencocokkan item berdasarkan kesamaan fitur kategori tunggal.
+    * **Kelebihan utama CBF** terletak pada transparansinya, kemampuannya menangani destinasi baru (*item cold start*) selama fitur kategorinya tersedia, dan kemampuannya melayani pengguna dengan preferensi kategori yang sangat spesifik.
+    * Namun, **keterbatasannya** adalah ketergantungan pada kualitas fitur yang digunakan (dalam hal ini, kategori tunggal membatasi kedalaman), serta kurangnya kemampuan untuk menghasilkan rekomendasi yang mengejutkan (*serendipity*) dan potensi terjadinya *filter bubble*.
+
+* **Model Collaborative Filtering (CF) dengan Deep Learning:**
+    * Model CF menunjukkan **performa yang menjanjikan** dalam memprediksi preferensi pengguna, dengan **RMSE sebesar 0.3498** dan **MAE sebesar 0.3012** pada data validasi (skala rating ternormalisasi 0-1).
+    * Dalam evaluasi kualitas rekomendasi Top-10, model CF mencapai **Recall@10 yang sangat tinggi (0.9673)**, yang berarti model sangat efektif dalam menemukan sebagian besar destinasi yang relevan bagi pengguna. **Precision@10 (0.4044)** menunjukkan bahwa sekitar 4 dari 10 rekomendasi teratas relevan, dengan **F1-Score@10 sebesar 0.5703** memberikan keseimbangan yang baik antara kedua metrik tersebut.
+    * **Kelebihan utama CF** adalah kemampuannya untuk personalisasi yang mendalam berdasarkan perilaku kolektif pengguna, potensi untuk *serendipity*, dan tidak bergantung pada fitur item eksplisit.
+    * **Kelemahan utamanya** adalah masalah *cold start* untuk pengguna dan item baru, serta sensitivitas terhadap kekarangan data (*data sparsity*).
+
+**Perbandingan dan Kesesuaian Penggunaan:**
+
+Tidak ada satu model yang superior secara absolut untuk semua skenario.
+* **Model Collaborative Filtering (CF)** menunjukkan potensi yang lebih besar sebagai sistem rekomendasi utama. Tingginya nilai Recall@10 sangat relevan dengan tujuan bisnis untuk membantu wisatawan mengatasi *information overload* dan **menemukan beragam destinasi yang mungkin mereka sukai**, termasuk destinasi baru atau kurang populer. Kemampuan personalisasinya yang mendalam juga sejalan dengan tujuan untuk meningkatkan pengalaman pengguna.
+* **Model Content-Based Filtering (CBF)** tetap berharga untuk kasus penggunaan spesifik, seperti **memberikan rekomendasi yang dapat dijelaskan**, menangani destinasi baru, atau melayani pengguna yang menginginkan eksplorasi mendalam dalam kategori tertentu. CBF juga dapat berfungsi sebagai sistem *fallback* yang baik.
+
+Secara keseluruhan, kedua model berhasil dikembangkan dan dievaluasi, memberikan pemahaman yang berharga tentang kekuatan dan keterbatasan masing-masing. Model CF berbasis *deep learning* menunjukkan kinerja yang sangat baik dalam hal cakupan rekomendasi yang relevan, menjadikannya kandidat kuat untuk implementasi inti. Untuk pengembangan sistem yang lebih komprehensif dan robust di masa depan, pendekatan *hybrid* yang mengkombinasikan keunggulan dari kedua model ini sangat direkomendasikan guna memaksimalkan kepuasan pengguna dan mencapai tujuan bisnis secara lebih efektif.
