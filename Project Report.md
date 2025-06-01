@@ -386,98 +386,314 @@ Sebagai langkah akhir dalam persiapan data, dibuat salinan kerja dari dataset ya
     * **Mempermudah Analisis dan Visualisasi:** Mengurutkan data berdasarkan `Place_Id` dapat mempermudah inspeksi manual data, analisis eksploratif lebih lanjut (misalnya, melihat semua rating untuk destinasi tertentu secara berurutan), dan membantu dalam visualisasi pola rating antar tempat wisata.
     * **Kesiapan untuk Tahap Selanjutnya:** Dataset yang telah dibersihkan dan diorganisir ini dianggap siap untuk tahap *feature engineering* dan proses pembuatan model rekomendasi.
 
+
+Baik, mari kita susun bagian **Pemodelan (Modeling)** untuk laporan proyek Anda, dimulai dengan pendekatan *Content-Based Filtering* berdasarkan informasi yang telah Anda berikan.
+
 # 🧮 Modeling
 
-Tahap ini berfokus pada pembangunan model machine learning untuk mengklasifikasikan tingkat risiko kesehatan mental berdasarkan fitur-fitur yang telah diproses. Untuk memperoleh gambaran performa awal dan membandingkan efektivitas berbagai algoritma, digunakan **lima model klasifikasi populer** sebagai baseline dengan **hyperparameter default**. Tujuan utamanya adalah mengidentifikasi model terbaik untuk dioptimalkan lebih lanjut pada tahap selanjutnya.
+Tahap pemodelan adalah inti dari proses CRISP-DM di mana teknik-teknik *machine learning* diterapkan untuk mencapai tujuan proyek. Dalam proyek sistem rekomendasi destinasi wisata Indonesia ini, akan dikembangkan dan disajikan dua solusi rekomendasi utama yang menggunakan algoritma berbeda untuk memberikan saran destinasi kepada pengguna. Tujuannya adalah untuk dapat memberikan rekomendasi *Top-N* (sejumlah N destinasi teratas) yang relevan.
 
-## Model yang Digunakan
+Dua pendekatan utama yang akan diimplementasikan adalah:
+1.  **Content-Based Filtering (Penyaringan Berbasis Konten):** Memanfaatkan atribut atau fitur dari destinasi wisata (dalam kasus ini, kategori destinasi) untuk merekomendasikan item yang serupa.
+2.  **Collaborative Filtering (Penyaringan Kolaboratif):** Menggunakan interaksi historis pengguna dengan destinasi (seperti rating) dan menerapkan model *deep learning* berbasis *embedding* untuk menemukan pola kesukaan dan merekomendasikan destinasi berdasarkan preferensi pengguna lain yang serupa.
 
-Berikut lima model klasifikasi yang digunakan:
+Berikut ini adalah penjelasan detail untuk masing-masing pendekatan:
 
-### 1. **K-Nearest Neighbors (KNN)**  
-KNN mengklasifikasikan sampel baru berdasarkan mayoritas label dari k tetangga terdekat dalam ruang fitur. Model ini cocok digunakan karena data telah melalui proses standarisasi, yang sangat penting dalam algoritma berbasis jarak seperti KNN.
+## Solusi 1: Content-Based Filtering (CBF)
+Pendekatan *Content-Based Filtering* (CBF) merekomendasikan item berdasarkan kemiripan antara fitur item yang telah disukai pengguna di masa lalu dengan fitur item lain yang tersedia. Dalam konteks proyek ini, CBF akan diimplementasikan dengan memanfaatkan **kategori destinasi wisata** sebagai fitur utama. Prosesnya melibatkan transformasi data kategori menggunakan TF-IDF (*Term Frequency-Inverse Document Frequency*) untuk mengukur bobot pentingnya setiap kategori, diikuti dengan perhitungan *Cosine Similarity* untuk mengidentifikasi kemiripan antar destinasi.
 
-**Hyperparameter Default:**
-```python
-KNeighborsClassifier(
-    n_neighbors=5,       # Jumlah tetangga yang digunakan
-    weights='uniform',   # Bobot: 'uniform' (sama) atau 'distance' (berdasarkan jarak)
-    algorithm='auto',    # Algoritma: 'auto', 'ball_tree', 'kd_tree', atau 'brute'
-    leaf_size=30,        # Ukuran leaf untuk struktur tree
-    p=2,                 # Parameter jarak (1=manhattan, 2=euclidean)
-    metric='minkowski'   # Metrik jarak
-)
-```
-### 2. **Decision Tree (DT)**  
-DT membangun struktur pohon berdasarkan pembagian informasi (information gain) untuk memisahkan kelas target. Algoritma ini mampu menangkap interaksi antar fitur dan memberikan interpretasi yang jelas terhadap proses klasifikasi.
-**Hyperparameter Default:**
-```python
-DecisionTreeClassifier(
-    criterion='gini',     # Kriteria split: 'gini' atau 'entropy'
-    splitter='best',      # Strategi split: 'best' atau 'random'
-    max_depth=None,       # Kedalaman maksimal pohon (None=tanpa batas)
-    min_samples_split=2,  # Minimum sampel untuk split node
-    min_samples_leaf=1,   # Minimum sampel di leaf node
-    min_weight_fraction_leaf=0.0,
-    max_features=None,    # Jumlah fitur yang dipertimbangkan untuk split
-    random_state=None,
-    max_leaf_nodes=None   # Jumlah maksimal leaf nodes
-)
-```
+### 1. Persiapan Data untuk Content-Based Filtering
+Sebelum membangun model CBF, data perlu disiapkan secara khusus. Karena CBF berfokus pada karakteristik intrinsik item (destinasi wisata), kita memerlukan daftar unik destinasi beserta fitur-fiturnya.
 
-### 3. **Random Forest (RF)**  
-RF adalah algoritma ensemble yang membangun banyak pohon keputusan dan menggabungkan prediksinya untuk meningkatkan akurasi dan mengurangi overfitting. Cocok untuk dataset dengan fitur heterogen dan kompleks, serta tahan terhadap outlier.
-**Hyperparameter Default:**
-```python
-RandomForestClassifier(
-    n_estimators=100,     # Jumlah pohon dalam ensemble
-    criterion='gini',     # Kriteria split: 'gini' atau 'entropy'
-    max_depth=None,       # Kedalaman maksimal per pohon
-    min_samples_split=2,
-    min_samples_leaf=1,
-    min_weight_fraction_leaf=0.0,
-    max_features='auto',  # Jumlah fitur: 'auto'=sqrt(n_features)
-    max_leaf_nodes=None,
-    bootstrap=True,       # Penggunaan bootstrap sampling
-    random_state=None
-)
-```
+* **Proses yang Dilakukan:**
+    1.  Salinan (`copy()`) dari dataset `preparation` (yang telah dibersihkan pada tahap Data Preparation) dibuat dengan nama `preparation_CBF`. Ini dilakukan untuk memastikan bahwa modifikasi data tidak memengaruhi dataset asli yang mungkin digunakan untuk pendekatan lain.
+    2.  Duplikasi berdasarkan kolom `Place_Id` dihilangkan dari `preparation_CBF`. Langkah ini penting karena dalam CBF, kita hanya memerlukan satu representasi unik untuk setiap destinasi beserta fiturnya (nama, kategori), bukan multipel entri rating dari pengguna yang berbeda untuk destinasi yang sama.
+        ```python
+        # preparation_CBF = preparation.copy()
+        # preparation_CBF = preparation_CBF.drop_duplicates('Place_Id')
+        ```
+    Hasil dari langkah ini adalah sebuah dataframe yang berisi **437 destinasi unik**, masing-masing dengan informasi `User_Id` (pengguna pertama yang meratingnya di data yang tidak terduplikasi), `Place_Id`, `Place_Ratings` (rating dari pengguna tersebut), `Place_Name`, dan `Category`.
 
-### 4. **Support Vector Machine (SVM)**  
-SVM bekerja dengan mencari hyperplane terbaik yang memisahkan kelas dalam ruang fitur berdimensi tinggi. Penggunaan SVM didukung oleh standarisasi fitur, karena SVM sangat sensitif terhadap skala data.
-**Hyperparameter Default:**
-```python
-SVC(
-    C=1.0,               # Parameter regularisasi
-    kernel='rbf',        # Jenis kernel: 'linear', 'poly', 'rbf', 'sigmoid'
-    degree=3,            # Derajat untuk kernel poly
-    gamma='scale',       # Koefisien kernel:'scale'=1/(n_features*X.var())
-    coef0=0.0,          # Term independen dalam kernel
-    shrinking=True,      # Menggunakan shrinking heuristic
-    probability=False,   # Mengestimasi probabilitas
-    tol=1e-3,            # Toleransi kriteria stopping
-    max_iter=-1          # Maksimum iterasi (-1=no limit)
-)
-```
+### 2. Ekstraksi Informasi Destinasi Wisata
+Untuk memfokuskan analisis pada fitur yang relevan untuk CBF, informasi spesifik destinasi diekstrak.
 
-### 5. **Naive Bayes (NB)**  
-NB adalah model probabilistik yang mengasumsikan independensi antar fitur. Meskipun sederhana, model ini sering memberikan hasil yang kompetitif, terutama jika data sudah bersih dan variabel relevan.
-**Hyperparameter Default:**
-```python
-GaussianNB(
-    priors=None,         # Probabilitas prior kelas
-    var_smoothing=1e-9   # Penambahan varians untuk stabilitas numerik
-)
-```
+* **Proses yang Dilakukan:**
+    1.  Kolom-kolom `Place_Id`, `Place_Name`, dan `Category` dari dataframe `preparation_CBF` diekstrak menjadi list terpisah.
+        ```python
+        # tourism_id = preparation_CBF['Place_Id'].tolist()
+        # tourism_name = preparation_CBF['Place_Name'].tolist()
+        # tourism_category = preparation_CBF['Category'].tolist()
+        ```
+        Verifikasi panjang list menunjukkan 437 entri untuk masing-masing, mengonfirmasi konsistensi data unik destinasi.
+    2.  Sebuah dataframe baru bernama `tourism_data` dibuat dengan tiga kolom: `id` (dari `tourism_id`), `destination` (dari `tourism_name`), dan `category` (dari `tourism_category`).
+        ```python
+        # tourism_data = pd.DataFrame({
+        #     'id': tourism_id,
+        #     'destination': tourism_name,
+        #     'category': tourism_category
+        # })
+        ```
+    Dataframe `tourism_data` ini berisi 437 baris dan 3 kolom, yang secara khusus menyajikan metadata destinasi yang akan digunakan untuk perhitungan kesamaan.
 
-## Alasan Penggunaan Banyak Model
+### 3. Vektorisasi Fitur Kategori dengan TF-IDF
+Inti dari CBF adalah representasi fitur item dalam format numerik yang dapat diolah. Dalam kasus ini, fitur `category` akan diubah menjadi vektor numerik menggunakan TF-IDF.
 
-Penggunaan lima model ini bertujuan untuk:
-- **Membandingkan performa awal (baseline)** dari berbagai pendekatan klasifikasi.
-- **Mengidentifikasi model yang paling sesuai** dengan karakteristik data.
-- Menjadi dasar dalam proses **seleksi dan tuning model terbaik** pada tahap selanjutnya.
+* **Proses yang Dilakukan:**
+    1.  Identifikasi kategori unik pada `tourism_data['category']` menunjukkan enam kategori: 'Budaya', 'Bahari', 'Taman_Hiburan', 'Cagar_Alam', 'Pusat_Perbelanjaan', dan 'Tempat_Ibadah'.
+    2.  Sebuah objek `TfidfVectorizer` diinisialisasi.
+    3.  Kolom `category` dari `tourism_data` ditransformasikan menjadi matriks TF-IDF menggunakan metode `fit_transform()`. Matriks ini (`tfidf_matrix`) akan memberikan bobot numerik pada setiap kategori untuk setiap destinasi.
+        ```python
+        # tfidf = TfidfVectorizer()
+        # tfidf_matrix = tfidf.fit_transform(tourism_data['category'])
+        ```
+    4.  Fitur (nama kategori) yang dihasilkan oleh TF-IDFVectorizer telah dinormalisasi menjadi *lowercase*, contohnya: `['bahari', 'budaya', 'cagar_alam', ..., 'tempat_ibadah']`.
+    5.  Dimensi dari `tfidf_matrix` adalah (437, 6), yang berarti terdapat 437 destinasi dan 6 fitur kategori unik.
+    6.  Representasi padat (`.todense()`) dari matriks ini menunjukkan bahwa setiap destinasi hanya memiliki bobot pada satu kategori (nilai 1 untuk kategori yang bersangkutan dan 0 untuk lainnya), karena setiap destinasi dalam dataset ini diklasifikasikan secara eksklusif ke dalam satu kategori.
 
-Seluruh model dilatih menggunakan data training dan diuji dengan data testing yang telah dipisahkan sebelumnya. Evaluasi dilakukan dengan metrik akurasi, precision, recall, dan f1-score untuk memperoleh gambaran menyeluruh terhadap performa model.
+* **Alasan Dilakukan:**
+    TF-IDF mengubah data teks kategori menjadi representasi vektor numerik. Meskipun dalam kasus ini setiap destinasi hanya memiliki satu kategori (sehingga TF-IDF berperilaku mirip *one-hot encoding*), penggunaan TF-IDF adalah pendekatan standar yang fleksibel jika di masa depan fitur teks yang lebih kompleks (seperti deskripsi) ingin disertakan. Matriks numerik ini memungkinkan perhitungan matematis untuk kesamaan antar destinasi.
+
+### 4. Perhitungan Kemiripan Destinasi dengan Cosine Similarity
+Setelah destinasi direpresentasikan sebagai vektor TF-IDF, langkah selanjutnya adalah menghitung kemiripan antar semua pasangan destinasi.
+
+* **Proses yang Dilakukan:**
+    1.  Fungsi `cosine_similarity` dari `sklearn.metrics.pairwise` diterapkan pada `tfidf_matrix`.
+        ```python
+        # from sklearn.metrics.pairwise import cosine_similarity
+        # cosine_sim = cosine_similarity(tfidf_matrix)
+        ```
+    2.  Hasilnya adalah matriks kemiripan (`cosine_sim`) berukuran 437x437. Setiap elemen (i, j) dalam matriks ini merepresentasikan skor kemiripan antara destinasi ke-i dan destinasi ke-j. Nilai diagonal adalah 1 (kemiripan destinasi dengan dirinya sendiri). Dalam kasus ini, karena setiap destinasi hanya memiliki satu kategori, skor kemiripan antar dua destinasi berbeda akan menjadi 1 jika mereka memiliki kategori yang sama, dan 0 jika berbeda.
+    3.  Matriks kemiripan ini kemudian diubah menjadi DataFrame (`cosine_sim_df`) dengan nama destinasi sebagai indeks dan kolom untuk memudahkan interpretasi dan penggunaan.
+        ```python
+        # cosine_sim_df = pd.DataFrame(cosine_sim, index=tourism_data['destination'], columns=tourism_data['destination'])
+        ```
+
+* **Alasan Dilakukan:**
+    *Cosine Similarity* adalah metrik yang umum digunakan untuk mengukur kesamaan antara dua vektor dalam ruang multidimensi. Metrik ini efektif untuk data tekstual yang telah divektorisasi. Matriks `cosine_sim_df` menjadi dasar bagi model CBF untuk menemukan destinasi yang paling mirip dengan destinasi input.
+
+### 5. Implementasi Fungsi Rekomendasi
+Untuk menghasilkan rekomendasi, sebuah fungsi khusus dibuat.
+
+* **Proses yang Dilakukan:**
+    Sebuah fungsi bernama `destination_recommendations` didefinisikan. Fungsi ini menerima nama destinasi sebagai input, matriks kemiripan (`cosine_sim_df`), data item (`tourism_data`), dan jumlah rekomendasi yang diinginkan (`k`, default 5).
+    Fungsi ini:
+    1.  Mengambil baris/kolom yang sesuai dengan destinasi input dari matriks kemiripan.
+    2.  Mengidentifikasi `k` destinasi lain dengan skor kemiripan tertinggi.
+    3.  Menghilangkan destinasi input dari daftar rekomendasi (jika muncul).
+    4.  Menggabungkan hasil dengan informasi kategori destinasi dan mengembalikan `k` destinasi teratas.
+    ```python
+    # def destination_recommendations(destination, similarity_data=cosine_sim_df, items=tourism_data[['destination', 'category']], k=5):
+    #     # Ambil indeks destinasi yang paling mirip
+    #     index = similarity_data.loc[:,destination].to_numpy().argpartition(range(-1, -k, -1))
+    #     closest = similarity_data.columns[index[-1:-(k+2):-1]] # Ambil top-k
+    #     closest = closest.drop(destination, errors='ignore') # Hapus destinasi input jika ada
+    #     return pd.DataFrame(closest).merge(items).head(k) 
+    ```
+
+* **Contoh Output Rekomendasi (Top-5):**
+    Ketika fungsi diuji dengan input destinasi 'Pantai Ancol', sistem memberikan output sebagai berikut:
+    ```
+    # destination_recommendations('Pantai Ancol')
+      destination category
+    0 Pantai Ngrenehan   Bahari
+    1 Pantai Drini       Bahari
+    2 Pantai Pulang Sawal Bahari
+    3 Pantai Krakal      Bahari
+    4 Pantai Parangtritis Bahari
+    ```
+    Hasil ini menunjukkan bahwa sistem berhasil merekomendasikan lima destinasi lain yang juga berkategori 'Bahari', sesuai dengan kategori 'Pantai Ancol'.
+
+### 6. Kelebihan dan Kekurangan Content-Based Filtering
+Pendekatan CBF memiliki karakteristiknya sendiri:
+
+* **Kelebihan:**
+    * **Tidak Memerlukan Data Pengguna Lain:** Rekomendasi dapat dibuat berdasarkan profil item dan preferensi satu pengguna, tanpa bergantung pada perilaku pengguna lain.
+    * **Transparansi:** Rekomendasi yang dihasilkan bersifat *explainable* atau dapat dijelaskan (misalnya, "direkomendasikan karena memiliki kategori yang sama").
+    * **Penanganan Item Baru (*Item Cold Start*):** Selama fitur item baru tersedia (dalam hal ini, kategorinya diketahui), sistem dapat langsung merekomendasikannya atau merekomendasikan item lain yang mirip dengannya.
+    * **Menangkap Minat Spesifik:** Mampu merekomendasikan item yang sangat spesifik atau *niche* jika pengguna menunjukkan preferensi terhadap fitur-fitur tersebut.
+
+* **Kekurangan:**
+    * **Ketergantungan pada Kualitas Fitur:** Kualitas rekomendasi sangat bergantung pada kelengkapan dan kualitas fitur item yang diekstrak. Jika fitur (kategori) terlalu umum atau tidak cukup deskriptif, rekomendasi mungkin kurang relevan. Dalam kasus ini, penggunaan hanya satu kategori per destinasi membatasi kedalaman pemahaman konten.
+    * **Terbatasnya Serendipitas (*Limited Serendipity*):** Cenderung merekomendasikan item yang sangat mirip dengan apa yang sudah diketahui atau disukai pengguna. Ini mengurangi peluang pengguna untuk menemukan item yang menarik dari kategori atau jenis yang benar-benar baru bagi mereka.
+    * ***Filter Bubble* atau *Overspecialization*:** Pengguna mungkin terjebak dalam rekomendasi yang monoton dan hanya berasal dari satu jenis kategori yang sama berulang kali.
+    * **Masalah *User Cold Start*:** Meskipun dapat menangani item baru, CBF tetap memerlukan informasi awal mengenai preferensi pengguna (misalnya, satu destinasi yang disukai) untuk dapat mulai memberikan rekomendasi.
+
+Pendekatan *Content-Based Filtering* ini menjadi salah satu pilar dalam sistem rekomendasi yang dikembangkan, memberikan dasar rekomendasi berdasarkan karakteristik eksplisit dari destinasi wisata.
+
+## Solusi 2: Collaborative Filtering (CF) dengan Embedding Deep Learning
+Pendekatan *Collaborative Filtering* (CF) bekerja berdasarkan ide bahwa pengguna yang memiliki preferensi serupa di masa lalu cenderung akan menyukai item yang sama di masa depan. Berbeda dengan CBF yang fokus pada fitur item, CF fokus pada pola interaksi pengguna-item (misalnya, rating yang diberikan). Dalam proyek ini, CF diimplementasikan menggunakan model *deep learning* yang memanfaatkan teknik *embedding* untuk mempelajari representasi laten (tersembunyi) dari pengguna dan destinasi.
+
+### 1. Persiapan Data dan Encoding untuk Collaborative Filtering
+Tahap awal dalam pengembangan model CF adalah mempersiapkan data interaksi pengguna-destinasi dan melakukan encoding pada ID pengguna serta ID destinasi.
+
+* **Proses yang Dilakukan:**
+    1.  Salinan dari dataset `preparation` (yang merupakan hasil dari tahap Data Preparation sebelumnya dan berisi 9.921 entri rating unik) dibuat dan disimpan dalam variabel `df`.
+        ```python
+        # df = preparation.copy()
+        ```
+    2.  ID pengguna (`User_Id`) dan ID tempat wisata (`Place_Id`) yang asli di-encode menjadi indeks numerik yang berurutan mulai dari 0. Proses ini melibatkan pembuatan *mapping dictionary*:
+        * `user_to_user_encoded` (ID asli ke ID ter-encode) dan `user_encoded_to_user` (ID ter-encode ke ID asli).
+        * `place_to_place_encoded` (ID asli ke ID ter-encode) dan `place_encoded_to_place` (ID ter-encode ke ID asli).
+    3.  Hasil encoding ini ditambahkan sebagai kolom baru (`user_encoded` dan `place_encoded`) ke dalam dataframe `df`.
+        ```python
+        # user_ids = df['User_Id'].unique().tolist()
+        # user_to_user_encoded = {x: i for i, x in enumerate(user_ids)}
+        # # ... (dan seterusnya untuk user_encoded_to_user, place_ids, place_to_place_encoded, place_encoded_to_place) ...
+        # df['user_encoded'] = df['User_Id'].map(user_to_user_encoded)
+        # df['place_encoded'] = df['Place_Id'].map(place_to_place_encoded)
+        ```
+    4.  Dilakukan perhitungan jumlah pengguna unik (300) dan destinasi unik (437), serta identifikasi nilai rating minimum (1) dan maksimum (5) dari dataset.
+
+* **Alasan Dilakukan:**
+    * Model *neural network*, khususnya *embedding layers* di TensorFlow/Keras, memerlukan input berupa indeks integer yang dimulai dari 0. Encoding memastikan ID pengguna dan destinasi sesuai dengan format ini.
+    * *Mapping dictionary* diperlukan untuk mengkonversi ID asli ke format yang dibutuhkan model dan sebaliknya, untuk menginterpretasikan hasil prediksi.
+    * Mengetahui jumlah unik pengguna dan destinasi penting untuk menentukan ukuran *embedding layers*. Informasi skala rating (min/max) digunakan untuk normalisasi nilai target (rating).
+
+### 2. Pembagian Data Latih dan Validasi (Train-Validation Split)
+Dataset kemudian diacak dan dibagi menjadi data latih (*training set*) dan data validasi (*validation set*).
+
+* **Proses yang Dilakukan:**
+    1.  Seluruh dataset `df` diacak secara acak (menggunakan `df.sample(frac=1, random_state=42)`) untuk memastikan tidak ada bias urutan.
+    2.  Variabel input `x` dibentuk dari pasangan kolom `user_encoded` dan `place_encoded`.
+    3.  Variabel target `y` (rating) dinormalisasi ke rentang [0, 1] menggunakan Min-Max Scaling: $y = (Place\_Ratings - min\_rating) / (max\_rating - min\_rating)$.
+        ```python
+        # x = df[['user_encoded', 'place_encoded']].values
+        # y = df['Place_Ratings'].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
+        ```
+    4.  Data dibagi menjadi 80% untuk data latih dan 20% untuk data validasi. Ini menghasilkan 7.936 sampel data latih dan 1.985 sampel data validasi.
+        ```python
+        # train_indices = int(0.8 * df.shape[0])
+        # x_train, x_val, y_train, y_val = (
+        #     x[:train_indices], x[train_indices:],
+        #     y[:train_indices], y[train_indices:]
+        # )
+        ```
+
+* **Alasan Dilakukan:**
+    * Pengacakan data penting untuk memastikan bahwa data latih dan validasi merepresentasikan distribusi data keseluruhan secara merata.
+    * Normalisasi nilai target (rating) ke rentang [0, 1] membantu stabilisasi proses pelatihan model *neural network* dan cocok dengan penggunaan fungsi aktivasi sigmoid pada layer output model.
+    * Pembagian data menjadi set latih dan validasi adalah praktik standar untuk mengevaluasi seberapa baik model dapat melakukan generalisasi terhadap data baru yang belum pernah dilihat sebelumnya, serta untuk mendeteksi dan mencegah *overfitting*.
+
+### 3. Membangun Model Deep Learning untuk Collaborative Filtering
+Sebuah model *neural network* kustom dirancang menggunakan Keras API untuk melakukan *collaborative filtering* berbasis *embedding*.
+
+* **Arsitektur Model (`RecommenderNet`):**
+    Sebuah kelas `RecommenderNet` yang merupakan turunan dari `tf.keras.Model` didefinisikan dengan komponen utama sebagai berikut:
+    1.  **Embedding Layers:**
+        * `user_embedding`: Memetakan setiap ID pengguna ter-encode ke sebuah vektor *embedding* berdimensi rendah (dipilih 8 dimensi).
+        * `destination_embedding`: Memetakan setiap ID destinasi ter-encode ke sebuah vektor *embedding* berdimensi rendah (8 dimensi).
+        Kedua *embedding layers* ini menggunakan inisialisasi bobot 'he_normal' dan regularisasi L2 (dengan faktor 1e-4) untuk mencegah *overfitting*.
+    2.  **Bias Layers:**
+        * `user_bias`: Sebuah *embedding layer* yang mempelajari bias spesifik untuk setiap pengguna.
+        * `destination_bias`: Sebuah *embedding layer* yang mempelajari bias spesifik untuk setiap destinasi.
+    3.  **Metode `call` (Forward Pass):**
+        * Menerima input berupa ID pengguna dan ID destinasi yang sudah di-encode.
+        * Mengambil vektor *embedding* dan bias untuk pengguna dan destinasi.
+        * Melakukan operasi *dot product* antara vektor *embedding* pengguna dan destinasi untuk menangkap interaksi atau kesesuaian preferensi.
+        * Menambahkan bias pengguna dan bias destinasi ke hasil *dot product*.
+        * Hasil akhir dilewatkan melalui fungsi aktivasi sigmoid untuk menghasilkan prediksi rating dalam rentang [0, 1].
+    (Dropout layers juga didefinisikan dalam `__init__` namun tidak diaktifkan dalam metode `call` pada cuplikan kode yang diberikan.)
+
+* **Alasan Arsitektur Ini:**
+    Arsitektur ini pada dasarnya mengimplementasikan teknik faktorisasi matriks (*Matrix Factorization*) dalam kerangka *neural network*. *Embedding layers* bertugas mempelajari fitur-fitur laten (tersembunyi) dari pengguna dan destinasi yang dapat menjelaskan pola rating yang diamati. Penambahan bias membantu model menangkap popularitas item atau kecenderungan pengguna dalam memberi rating yang tidak dapat dijelaskan oleh interaksi fitur laten saja. Sigmoid pada output memastikan prediksi sesuai dengan skala rating yang telah dinormalisasi.
+
+### 4. Kompilasi dan Pelatihan Model
+Model yang telah dirancang kemudian dikompilasi dan dilatih.
+
+* **Proses Kompilasi dan Pelatihan:**
+    1.  Model `RecommenderNet` diinisialisasi dengan jumlah pengguna unik, jumlah destinasi unik, dan ukuran *embedding* (8).
+    2.  *Callbacks* disiapkan:
+        * `EarlyStopping`: Menghentikan pelatihan jika `val_loss` tidak membaik selama 10 epoch, dan mengembalikan bobot terbaik.
+        * `ReduceLROnPlateau`: Mengurangi *learning rate* jika `val_loss` stagnan selama 5 epoch.
+    3.  Model dikompilasi menggunakan:
+        * *Loss Function*: `MeanSquaredError()` (digunakan untuk mengukur error antara rating prediksi dan rating aktual yang telah dinormalisasi).
+        * *Optimizer*: `Adam` dengan *learning rate* awal 0.001.
+        * *Metrics*: `RootMeanSquaredError()` (RMSE) untuk memantau performa.
+        ```python
+        # model = RecommenderNet(num_users, num_destination, 8)
+        # model.compile(
+        #     loss = tf.keras.losses.MeanSquaredError(),
+        #     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001),
+        #     metrics = [tf.keras.metrics.RootMeanSquaredError()]
+        # )
+        ```
+    4.  Model dilatih (`model.fit`) menggunakan data latih (`x_train`, `y_train`), dengan data validasi (`x_val`, `y_val`) digunakan untuk evaluasi setiap epoch. Parameter pelatihan: `batch_size = 125`, `epochs = 100` (maksimum).
+        ```python
+        # history = model.fit(
+        #     x = x_train, y = y_train,
+        #     batch_size = 125, epochs = 100,
+        #     validation_data = (x_val, y_val),
+        #     callbacks=[early_stopping, reduce_lr]
+        # )
+        ```
+    * **Observasi Pelatihan:**
+        Pelatihan menunjukkan penurunan *loss* yang baik pada epoch-epoch awal. *Callback* `ReduceLROnPlateau` terpicu beberapa kali, mengurangi *learning rate* untuk membantu model menemukan konvergensi yang lebih baik. Akhirnya, `EarlyStopping` menghentikan pelatihan pada epoch ke-22 (berdasarkan deskripsi naratif, epoch terbaik adalah ke-12 dimana bobot dikembalikan), mencegah *overfitting* lebih lanjut. Pada epoch terbaik (epoch 12), model mencapai `training loss` sekitar 0.1161 dan `validation loss` sekitar 0.1245, dengan RMSE sekitar 0.35 pada skala rating yang dinormalisasi.
+
+* **Alasan Dilakukan:**
+    Proses kompilasi mendefinisikan bagaimana model akan belajar (optimizer, loss) dan bagaimana performanya akan diukur (metrics). Pelatihan iteratif memungkinkan model untuk menyesuaikan bobot *embedding* dan biasnya agar dapat memprediksi rating seakurat mungkin berdasarkan data historis. Penggunaan *callbacks* membantu mengoptimalkan proses pelatihan dan meningkatkan kemampuan generalisasi model.
+
+### 5. Inferensi dan Contoh Penggunaan untuk Top-N Rekomendasi
+Setelah model dilatih, model tersebut dapat digunakan untuk memberikan rekomendasi destinasi yang dipersonalisasi.
+
+* **Proses Inferensi:**
+    1.  Satu ID pengguna (`user_id`) dipilih sebagai contoh (misalnya, User ID 1).
+    2.  Daftar destinasi yang sudah pernah dikunjungi/dirating oleh pengguna tersebut diidentifikasi.
+    3.  Daftar destinasi yang *belum* pernah dikunjungi oleh pengguna tersebut dibuat.
+    4.  ID pengguna (yang sudah di-encode) dipasangkan dengan setiap ID destinasi yang belum dikunjungi (yang juga sudah di-encode) untuk membentuk input bagi model.
+    5.  Model (`model.predict`) digunakan untuk memprediksi skor rating untuk semua pasangan user-destinasi yang belum dikunjungi tersebut.
+    6.  Prediksi rating diurutkan dari yang tertinggi, dan 10 destinasi teratas diambil sebagai rekomendasi.
+    7.  ID destinasi yang direkomendasikan di-decode kembali ke nama destinasi asli dan kategorinya.
+    8.  Sebagai konteks, 5 destinasi favorit pengguna (berdasarkan rating tertinggi yang pernah diberikan) juga ditampilkan, diikuti oleh 10 rekomendasi destinasi baru.
+
+* **Contoh Output Rekomendasi (Top-10 untuk User ID: 1):**
+    ```
+    🎯 Showing Recommendations for User ID: 1
+    ============================================================
+
+    📌 Top 5 Destinations Visited by User (Based on Rating):
+    ------------------------------------------------------------
+    No.  Destination                       | Category            
+    ------------------------------------------------------------
+    1    Atlantis Water Adventure          | Taman_Hiburan       
+    2    Museum Gedung Sate                | Budaya              
+    3    Taman Harmoni Keputih             | Cagar_Alam          
+    4    Taman Sungai Mudal                | Cagar_Alam          
+    5    Surabaya North Quay               | Taman_Hiburan       
+
+    ✨ Top 10 Destination Recommendations for User:
+    ------------------------------------------------------------
+    No.  Destination                       | Category            
+    ------------------------------------------------------------
+    1    Bukit Jamur                       | Cagar_Alam          
+    2    Glamping Lakeside Rancabali       | Taman_Hiburan       
+    3    Monumen Yogya Kembali             | Budaya              
+    4    Jogja Exotarium                   | Taman_Hiburan       
+    5    Jogja Bay Pirates Adventure Waterpark | Taman_Hiburan       
+    6    Keraton Surabaya                  | Budaya              
+    7    Bukit Bintang Yogyakarta          | Taman_Hiburan       
+    8    Taman Hiburan Rakyat              | Taman_Hiburan       
+    9    Pantai Depok Jogja                | Bahari              
+    10   Obyek Wisata Goa Kreo             | Cagar_Alam
+    ```
+    Output ini menunjukkan kemampuan model *deep learning* dalam memberikan rekomendasi yang beragam dan relevan berdasarkan pola preferensi yang dipelajari dari interaksi pengguna.
+
+### 6. Kelebihan dan Kekurangan Collaborative Filtering (dengan Deep Learning)
+
+* **Kelebihan:**
+    * **Tidak Memerlukan Fitur Item Manual:** Model belajar langsung dari interaksi pengguna-item (rating), sehingga tidak memerlukan *feature engineering* yang ekstensif pada konten item.
+    * **Kemampuan Menemukan Hubungan Kompleks dan Serendipitas:** Model *deep learning* dapat menangkap pola dan hubungan non-linear yang kompleks dalam data. Hal ini memungkinkan penemuan rekomendasi yang bersifat *serendipitous* (mengejutkan namun relevan) yang mungkin tidak ditemukan oleh CBF.
+    * **Personalisasi yang Lebih Mendalam:** Dengan mempelajari *embedding* pengguna dan item, model dapat menghasilkan rekomendasi yang lebih personal dan akurat terhadap selera unik pengguna.
+    * **Scalability (dengan arsitektur yang tepat):** Model *neural network* dapat diskalakan untuk menangani dataset yang besar.
+
+* **Kekurangan:**
+    * **Masalah *Cold Start*:** Sangat bergantung pada data interaksi historis. Sulit memberikan rekomendasi untuk pengguna baru (*user cold start*) atau item baru (*item cold start*) yang belum memiliki interaksi. Model tidak dapat membuat *embedding* untuk entitas baru tanpa interaksi.
+    * **Ketergantungan pada Kuantitas dan Kualitas Data Interaksi:** Membutuhkan volume data interaksi yang cukup besar dan berkualitas baik untuk melatih model secara efektif. Performa dapat menurun drastis pada dataset yang sangat *sparse*.
+    * ***Popularity Bias*:** Model mungkin cenderung merekomendasikan item-item populer yang memiliki banyak interaksi, sehingga item yang kurang populer (namun mungkin relevan) menjadi kurang terwakili.
+    * **Kurang Transparan (*Less Explainable*):** Dibandingkan CBF, rekomendasi dari model *deep learning* berbasis *embedding* seringkali lebih sulit untuk dijelaskan ("black box"), karena didasarkan pada fitur-fitur laten yang dipelajari secara otomatis.
+
+Pendekatan *Collaborative Filtering* berbasis *deep learning* ini melengkapi CBF dengan menawarkan personalisasi yang didorong oleh perilaku kolektif pengguna, mampu menangkap nuansa preferensi yang lebih halus.
+
+
 
 # 💯 Evaluation
 
