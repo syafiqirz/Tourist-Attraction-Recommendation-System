@@ -555,7 +555,7 @@ Dataset kemudian diacak dan dibagi menjadi data latih (*training set*) dan data 
 * **Proses yang Dilakukan:**
     1.  Seluruh dataset `df` diacak secara acak (menggunakan `df.sample(frac=1, random_state=42)`) untuk memastikan tidak ada bias urutan.
     2.  Variabel input `x` dibentuk dari pasangan kolom `user_encoded` dan `place_encoded`.
-    3.  Variabel target `y` (rating) dinormalisasi ke rentang [0, 1] menggunakan Min-Max Scaling: $y = (Place\_Ratings - min\_rating) / (max\_rating - min\_rating)$.
+    3.  Variabel target `y` (rating) dinormalisasi ke rentang [0, 1] menggunakan Min-Max Scaling: $y = (Place_Ratings - min_rating) / (max_rating - min_rating)$.
         ```python
         # x = df[['user_encoded', 'place_encoded']].values
         # y = df['Place_Ratings'].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
@@ -591,8 +591,8 @@ Sebuah model *neural network* kustom dirancang menggunakan Keras API untuk melak
         * Mengambil vektor *embedding* dan bias untuk pengguna dan destinasi.
         * Melakukan operasi *dot product* antara vektor *embedding* pengguna dan destinasi untuk menangkap interaksi atau kesesuaian preferensi.
         * Menambahkan bias pengguna dan bias destinasi ke hasil *dot product*.
+        * Mengaktifkan Dropout layers untuk mencegah overfitting.
         * Hasil akhir dilewatkan melalui fungsi aktivasi sigmoid untuk menghasilkan prediksi rating dalam rentang [0, 1].
-    (Dropout layers juga didefinisikan dalam `__init__` namun tidak diaktifkan dalam metode `call` pada cuplikan kode yang diberikan.)
 
 * **Alasan Arsitektur Ini:**
     Arsitektur ini pada dasarnya mengimplementasikan teknik faktorisasi matriks (*Matrix Factorization*) dalam kerangka *neural network*. *Embedding layers* bertugas mempelajari fitur-fitur laten (tersembunyi) dari pengguna dan destinasi yang dapat menjelaskan pola rating yang diamati. Penambahan bias membantu model menangkap popularitas item atau kecenderungan pengguna dalam memberi rating yang tidak dapat dijelaskan oleh interaksi fitur laten saja. Sigmoid pada output memastikan prediksi sesuai dengan skala rating yang telah dinormalisasi.
