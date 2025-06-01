@@ -294,62 +294,97 @@ Tentu, berikut adalah terjemahan dari bagian tersebut ke dalam Bahasa Indonesia:
     * Kota Yogyakarta dan Bandung mendominasi dalam hal jumlah destinasi yang tersedia di dataset.
     * Rating yang diberikan pengguna cenderung netral hingga cukup baik, dengan banyak rating berada di angka 3 dan 4.
 
-# ⚙️ Data Preparation
+# ⚙️ Persiapan Data (Data Preparation)
 
-Bagian ini bertujuan untuk memberikan pemahaman mendalam mengenai dataset yang digunakan dalam proyek sistem rekomendasi pariwisata Indonesia. Ini mencakup deskripsi dataset, sumbernya, struktur data, deskripsi fitur, serta ringkasan dari analisis data eksploratif (EDA) yang telah dilakukan.
+Tahap persiapan data (Data Preparation) merupakan langkah berikutnya setelah pemahaman data (Data Understanding). Pada tahap ini, dataset mentah yang telah dieksplorasi akan diolah dan ditransformasi menjadi format yang sesuai dan optimal untuk tahap pemodelan. Proses ini melibatkan serangkaian teknik untuk membersihkan, mengintegrasikan, dan menstrukturkan data guna meningkatkan kualitas dan relevansinya untuk analisis lebih lanjut. Berikut adalah tahapan persiapan data yang dilakukan secara berurutan:
 
-## 1. Filter Gender yang Relevan
-Hanya responden dengan gender "Male" dan "Female" yang disertakan dalam analisis. Data dengan gender seperti "Non-binary" atau "Prefer not to say" dihapus karena jumlahnya sangat kecil dan berpotensi menimbulkan noise dalam pemodelan. Setelah itu, indeks dataset di-reset agar lebih rapi. Setelah difilter menurut fitur Gender, record data yang tersisa berjumlah **5.920** record data.
+## 1. Penggabungan Data Rating dengan Informasi Destinasi
+Langkah awal dalam persiapan data adalah menggabungkan informasi esensial dari beberapa sumber data menjadi satu dataset yang komprehensif. Dalam konteks ini, data rating pengguna akan diperkaya dengan detail mengenai destinasi wisata.
 
-## 2. Encoding Variabel Kategorikal
-### Encoding Secara Manual
+* **Proses yang Dilakukan:**
+    Dataset `rating` yang berisi `User_Id`, `Place_Id`, dan `Place_Ratings` digabungkan (merged) dengan subset dari dataset `tourism` yang memuat `Place_Id`, `Place_Name` (nama tempat wisata), dan `Category` (kategori destinasi). Penggabungan ini dilakukan menggunakan kolom `Place_Id` sebagai kunci (key) penggabungan. Metode penggabungan yang digunakan adalah `left join` (pd.merge(..., how='left')), yang memastikan semua data rating dari dataset `rating` tetap dipertahankan, dan informasi destinasi yang cocok akan ditambahkan.
+    ```python
+    # tourism_rating = pd.merge(rating, tourism[['Place_Id','Place_Name', 'Category']], on='Place_Id', how='left')
+    ```
+    Hasilnya adalah dataframe `tourism_rating` baru yang kini memiliki 10.000 baris dan 5 kolom: `User_Id`, `Place_Id`, `Place_Ratings`, `Place_Name`, dan `Category`.
 
-**Label Encoding** adalah teknik preprocessing data yang mengubah nilai kategorikal (seperti "Male"/"Female") menjadi nilai numerik (0/1). 
+* **Alasan Dilakukan:**
+    * **Memperkaya Data Rating:** Tujuan utama penggabungan ini adalah untuk menambahkan konteks deskriptif (nama dan kategori destinasi) ke setiap entri rating. Informasi ini sangat penting, terutama untuk pengembangan sistem rekomendasi *Content-Based Filtering*.
+    * **Analisis Lebih Mendalam:** Dengan informasi tambahan ini, analisis terhadap preferensi pengguna berdasarkan kategori atau nama tempat tertentu menjadi mungkin.
+    * **Menjaga Integritas Data Rating:** Penggunaan `left join` memastikan tidak ada data rating yang hilang selama proses penggabungan, bahkan jika ada `Place_Id` di tabel rating yang (secara teoritis) tidak ditemukan di tabel tourism.
 
-Tujuan utamanya:
-1. Memungkinkan algoritma machine learning memproses data kategorikal
-2. Mengkonversi teks menjadi format numerik yang bisa diolah komputer
-3. Mempertahankan urutan jika variabel bersifat ordinal (misal: "Low"=0, "Medium"=1, "High"=2)
+## 2. Standardisasi Format Kategori Destinasi
+Setelah data digabungkan, langkah selanjutnya adalah melakukan standardisasi pada data kategorikal, khususnya pada kolom `Category`.
 
-Pada project ini, encoding dilakukan secara manual menggunakan `map()` karena lebih sederhana, transparan, dan memberikan kontrol penuh terhadap urutan nilai numerik—terutama untuk fitur ordinal seperti `work_environment`. Selain itu, teknik ini efisien untuk variabel biner dan menghindari overhead tambahan dari library encoder.
+* **Proses yang Dilakukan:**
+    1.  Pertama, dilakukan identifikasi terhadap semua nilai unik dalam kolom `Category` untuk memahami variasi jenis tempat wisata. Hasilnya menunjukkan kategori seperti 'Budaya', 'Bahari', 'Taman Hiburan', 'Cagar Alam', 'Pusat Perbelanjaan', dan 'Tempat Ibadah'.
+        ```python
+        # tourism_rating['Category'].unique()
+        ```
+    2.  Kemudian, dilakukan penggantian spasi dalam nama kategori dengan karakter underscore (`_`). Misalnya, "Taman Hiburan" diubah menjadi "Taman_Hiburan", "Cagar Alam" menjadi "Cagar_Alam", dan seterusnya untuk kategori lain yang mengandung spasi.
+        ```python
+        # tourism_rating['Category'] = tourism_rating['Category'].replace('Taman Hiburan', 'Taman_Hiburan')
+        # # ... (penggantian serupa untuk kategori lain) ...
+        # tourism_rating['Category'].unique()
+        ```
+    Hasilnya, semua kategori kini memiliki format yang konsisten tanpa spasi.
 
-Beberapa variabel kategorikal diubah menjadi representasi numerik:
-- Variabel `gender` diubah menjadi format numerik agar dapat diproses oleh model machine learning:
-  - Male → 0
-  - Female → 1
-- `work_environment`: dikodekan berdasarkan urutan logis dari fleksibel ke kaku:
-  - Remote → 0
-  - Hybrid → 1
-  - On-site → 2
-- `mental_health_history` dan `seeks_treatment`: diubah menjadi format biner (Yes → 1, No → 0)
+* **Alasan Dilakukan:**
+    * **Memudahkan Pemrosesan Teks:** Format tanpa spasi (menggunakan underscore) membuat setiap nama kategori menjadi satu token tunggal. Ini menyederhanakan proses analisis teks atau *feature engineering* di tahap selanjutnya (misalnya, saat menggunakan kategori dalam model TF-IDF).
+    * **Konsistensi dan Keterbacaan:** Standardisasi ini meningkatkan konsistensi data dan mempermudah pembacaan serta penggunaan kategori sebagai fitur dalam model.
 
-## 3. Encoding Target: mental_health_risk
-Kolom target `mental_health_risk` dikonversi ke format numerik agar bisa digunakan untuk klasifikasi:
-- Low → 0
-- Medium → 1
-- High → 2
-Kolom `mental_health_risk_encoded` yang sebelumnya dibuat manual kemudian dihapus karena sudah tidak diperlukan lagi.
+## 3. Mengatasi Nilai Hilang (Missing Values) dan Duplikasi Data
+Kualitas data sangat mempengaruhi kinerja model. Oleh karena itu, pemeriksaan dan penanganan nilai hilang serta data duplikat adalah langkah penting.
 
-## 4. Standarisasi Fitur Numerikal
-Fitur numerik seperti `depression_score`, `anxiety_score`, dan `productivity_score` memiliki skala yang berbeda. Untuk menyamakan skala dan mencegah bias algoritma terhadap fitur tertentu, dilakukan standarisasi menggunakan `StandardScaler`, sehingga semua fitur memiliki:
-- Rata-rata = 0
-- Standar deviasi = 1
+* **Proses yang Dilakukan (Penanganan Missing Values):**
+    Dilakukan pemeriksaan untuk mendeteksi keberadaan nilai `null` atau *missing values* pada setiap kolom dalam dataframe `tourism_rating` menggunakan metode `.isnull().sum()`.
+    ```python
+    # tourism_rating.isnull().sum()
+    ```
+    **Hasil:** Pemeriksaan menunjukkan bahwa tidak ada nilai hilang (semua kolom memiliki jumlah *missing values* 0) dalam dataframe `tourism_rating` yang telah digabungkan dan difokuskan pada kolom-kolom relevan.
 
-Standarisasi sangat penting terutama untuk algoritma berbasis jarak seperti KNN dan SVM.
+* **Alasan Dilakukan (Penanganan Missing Values):**
+    * **Memastikan Kelengkapan Data:** Langkah ini penting untuk memverifikasi bahwa data yang akan digunakan untuk pemodelan sudah lengkap.
+    * **Mencegah Error pada Model:** Data yang tidak lengkap atau mengandung *missing values* dapat menyebabkan error selama proses pelatihan model atau menghasilkan prediksi yang tidak akurat.
+    * Meskipun dalam kasus ini tidak ditemukan *missing values* pada kolom-kolom yang diperiksa, langkah verifikasi ini tetap merupakan praktik terbaik.
 
-## 5. Train-Test Split
-Data dibagi menjadi dua bagian:
-- **Training set (90%)**: untuk melatih model
-- **Testing set (10%)**: untuk menguji performa model terhadap data yang belum pernah dilihat
+* **Proses yang Dilakukan (Penanganan Duplikasi Data):**
+    1.  Dilakukan pengecekan jumlah baris data yang duplikat dalam dataframe `tourism_rating` menggunakan `.duplicated().sum()`.
+        ```python
+        # tourism_rating.duplicated().sum()
+        # Output: np.int64(79)
+        ```
+        Hasilnya menunjukkan terdapat 79 baris data yang duplikat.
+    2.  Baris-baris duplikat tersebut kemudian dihapus dari dataframe menggunakan `drop_duplicates(inplace=True)`.
+    3.  Dilakukan verifikasi ulang untuk memastikan semua data duplikat telah terhapus.
+        ```python
+        # tourism_rating.drop_duplicates(inplace=True)
+        # tourism_rating.duplicated().sum()
+        # Output: np.int64(0)
+        ```
+    **Efek:** Setelah penghapusan duplikat, jumlah record dalam `tourism_rating` berkurang dari 10.000 menjadi 9.921 baris.
 
-Pemisahan dilakukan dengan parameter `random_state=123` agar hasilnya konsisten setiap kali dijalankan ulang.
+* **Alasan Dilakukan (Penanganan Duplikasi Data):**
+    * **Menghindari Bias Model:** Data duplikat, terutama dalam konteks rating, dapat memberikan bobot yang tidak semestinya pada interaksi pengguna-item tertentu, sehingga berpotensi menyebabkan bias dalam model rekomendasi.
+    * **Meningkatkan Kualitas Perhitungan Similarity:** Dalam *Collaborative Filtering*, data duplikat dapat mengganggu perhitungan kemiripan (similarity) antar pengguna atau antar item.
+    * **Memastikan Keunikan Entri:** Setiap baris data rating seharusnya merepresentasikan satu interaksi unik. Penghapusan duplikat meningkatkan kualitas dan integritas data.
 
-Ukuran data setelah pembagian:
-- Total data: 5.290 sampel
-- Training set: 4.232 sampel
-- Testing set: 1.058 sampel
+## 4. Penyiapan Data Final untuk Analisis
+Sebagai langkah akhir dalam persiapan data, dibuat salinan kerja dari dataset yang telah bersih dan dilakukan pengurutan data.
 
-Pembagian ini bertujuan untuk menghindari overfitting dan memungkinkan evaluasi model secara objektif.
+* **Proses yang Dilakukan:**
+    1.  Sebuah variabel baru bernama `preparation` dibuat sebagai salinan (working copy) dari dataframe `tourism_rating` yang telah melalui semua tahapan pembersihan sebelumnya.
+    2.  Data dalam dataframe `preparation` kemudian diurutkan berdasarkan kolom `Place_Id`.
+    ```python
+    # preparation = tourism_rating
+    # preparation.sort_values('Place_Id')
+    ```
+    **Struktur Data Final:** Dataframe `preparation` kini berisi 9.921 entri valid dengan 5 kolom utama: `User_Id`, `Place_Id`, `Place_Ratings`, `Place_Name`, dan `Category`.
+
+* **Alasan Dilakukan:**
+    * **Salinan Kerja (Working Copy):** Membuat salinan data adalah praktik yang baik untuk menjaga dataset asli yang telah dibersihkan tetap utuh, sementara modifikasi atau eksperimen lebih lanjut dapat dilakukan pada salinan tersebut.
+    * **Mempermudah Analisis dan Visualisasi:** Mengurutkan data berdasarkan `Place_Id` dapat mempermudah inspeksi manual data, analisis eksploratif lebih lanjut (misalnya, melihat semua rating untuk destinasi tertentu secara berurutan), dan membantu dalam visualisasi pola rating antar tempat wisata.
+    * **Kesiapan untuk Tahap Selanjutnya:** Dataset yang telah dibersihkan dan diorganisir ini dianggap siap untuk tahap *feature engineering* dan proses pembuatan model rekomendasi.
 
 # 🧮 Modeling
 
