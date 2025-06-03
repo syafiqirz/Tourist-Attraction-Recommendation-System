@@ -434,7 +434,7 @@ Inti dari CBF adalah representasi fitur item dalam format numerik yang dapat dio
 * **Alasan Dilakukan:**
     TF-IDF mengubah data teks kategori menjadi representasi vektor numerik. Meskipun dalam kasus ini setiap destinasi hanya memiliki satu kategori (sehingga TF-IDF berperilaku mirip *one-hot encoding*), penggunaan TF-IDF adalah pendekatan standar yang fleksibel jika di masa depan fitur teks yang lebih kompleks (seperti deskripsi) ingin disertakan. Matriks numerik ini memungkinkan perhitungan matematis untuk kesamaan antar destinasi.
 
-### 3. Ringkasan Hyperparameter TF-IDF Vectorizer (`TfidfVectorizer`)
+### 4. Ringkasan Hyperparameter TF-IDF Vectorizer (`TfidfVectorizer`)
 
 Walaupun **tidak menyetel secara eksplisit**, dalam penggunaan **TF-IDF**, memang ada beberapa **hyperparameter**, meskipun banyak yang secara implisit menggunakan nilai default yang tetap memengaruhi performa sistem rekomendasi berbasis konten. Berikut hyperparameter defaultnya:
 
@@ -571,7 +571,7 @@ Untuk menghasilkan rekomendasi, sebuah fungsi khusus dibuat.
     ```
     Ketika diuji dengan memasukkan ID Destinasi 400, sistem berhasil mengidentifikasi bahwa destinasi tersebut adalah Hutan Bambu Keputih yang termasuk dalam kategori Cagar_Alam. Berdasarkan informasi ini, sistem kemudian memberikan rekomendasi lima destinasi lain yang memiliki kategori serupa, yaitu Cagar_Alam. Rekomendasi yang dihasilkan mencerminkan kemampuan model untuk menghubungkan destinasi baru dengan destinasi lain yang serupa dari segi kategori, sehingga membantu pengguna menemukan tempat wisata dengan karakteristik dan tema yang konsisten sesuai preferensi awal mereka. Hal ini menunjukkan efektivitas model content-based filtering dalam menyediakan rekomendasi yang relevan dan sesuai konteks kategori destinasi yang diminati.
 
-### 6. Ringkasan Hyperparameter Model Content Based Filtering Perhitungan Cosine Similarity (`cosine_similarity`)
+### 3. Ringkasan Hyperparameter Model Content Based Filtering Perhitungan Cosine Similarity (`cosine_similarity`)
 
 Walaupun **tidak menyetel secara eksplisit**, dalam tahap **Content-Based Filtering** menggunakan **Cosine Similarity**, ada **hyperparameter** yang menggunakan nilai default yang tetap memengaruhi performa sistem rekomendasi berbasis konten. Berikut hyperparameter defaultnya:
 
@@ -579,7 +579,7 @@ Walaupun **tidak menyetel secara eksplisit**, dalam tahap **Content-Based Filter
 | -------------- | ---------------- | ----------------------------------------------------- |
 | `dense_output` | `True` (default) | Output sebagai array numpy biasa, bukan sparse matrix |
 
-### 7. Kelebihan dan Kekurangan Content-Based Filtering
+### 4. Kelebihan dan Kekurangan Content-Based Filtering
 Pendekatan CBF memiliki karakteristiknya sendiri:
 
 * **Kelebihan:**
@@ -597,9 +597,7 @@ Pendekatan CBF memiliki karakteristiknya sendiri:
 ## Solusi 2: Collaborative Filtering (CF) dengan Embedding Deep Learning
 Pendekatan *Collaborative Filtering* (CF) bekerja berdasarkan ide bahwa pengguna yang memiliki preferensi serupa di masa lalu cenderung akan menyukai item yang sama di masa depan. Berbeda dengan CBF yang fokus pada fitur item, CF fokus pada pola interaksi pengguna-item (misalnya, rating yang diberikan). Dalam proyek ini, CF diimplementasikan menggunakan model *deep learning* yang memanfaatkan teknik *embedding* untuk mempelajari representasi laten (tersembunyi) dari pengguna dan destinasi.
 
-
-
-### 3. Membangun Model Deep Learning untuk Collaborative Filtering
+### 1. Membangun Model Deep Learning untuk Collaborative Filtering
 Sebuah model *neural network* kustom dirancang menggunakan Keras API untuk melakukan *collaborative filtering* berbasis *embedding*.
 
 * **Arsitektur Model (`RecommenderNet`):**
@@ -621,7 +619,7 @@ Sebuah model *neural network* kustom dirancang menggunakan Keras API untuk melak
 * **Alasan Arsitektur Ini:**
     Arsitektur ini pada dasarnya mengimplementasikan teknik faktorisasi matriks (*Matrix Factorization*) dalam kerangka *neural network*. *Embedding layers* bertugas mempelajari fitur-fitur laten (tersembunyi) dari pengguna dan destinasi yang dapat menjelaskan pola rating yang diamati. Penambahan bias membantu model menangkap popularitas item atau kecenderungan pengguna dalam memberi rating yang tidak dapat dijelaskan oleh interaksi fitur laten saja. Sigmoid pada output memastikan prediksi sesuai dengan skala rating yang telah dinormalisasi.
 
-### 4. Kompilasi dan Pelatihan Model
+### 2. Kompilasi dan Pelatihan Model
 Model yang telah dirancang kemudian dikompilasi dan dilatih.
 
 * **Proses Kompilasi dan Pelatihan:**
@@ -656,7 +654,7 @@ Model yang telah dirancang kemudian dikompilasi dan dilatih.
 * **Alasan Dilakukan:**
     Proses kompilasi mendefinisikan bagaimana model akan belajar (optimizer, loss) dan bagaimana performanya akan diukur (metrics). Pelatihan iteratif memungkinkan model untuk menyesuaikan bobot *embedding* dan biasnya agar dapat memprediksi rating seakurat mungkin berdasarkan data historis. Penggunaan *callbacks* membantu mengoptimalkan proses pelatihan dan meningkatkan kemampuan generalisasi model.
 
-### 5. Inferensi dan Contoh Penggunaan untuk Top-N Rekomendasi
+### 3. Inferensi dan Contoh Penggunaan untuk Top-N Rekomendasi
 Setelah model dilatih, model tersebut dapat digunakan untuk memberikan rekomendasi destinasi yang dipersonalisasi.
 
 * **Proses Inferensi:**
@@ -701,47 +699,47 @@ Setelah model dilatih, model tersebut dapat digunakan untuk memberikan rekomenda
     ```
     Output rekomendasi ini menunjukkan bagaimana model collaborative filtering dapat memahami preferensi pengguna berdasarkan histori interaksi dan memberikan rekomendasi destinasi wisata yang relevan dan beragam. Dari daftar 5 destinasi yang sudah dikunjungi dan dinilai tinggi oleh pengguna dengan ID 1, terlihat bahwa pengguna menyukai berbagai kategori seperti Taman Hiburan, Budaya, dan Cagar Alam. Model kemudian merekomendasikan 10 destinasi baru yang belum dikunjungi, namun sesuai dengan pola preferensi tersebut, mencakup destinasi dari kategori yang sama seperti Cagar Alam, Taman Hiburan, dan Budaya, serta menambahkan kategori Bahari yang mungkin juga relevan. Rekomendasi ini menunjukkan kemampuan model dalam menangkap kesukaan pengguna terhadap beragam tipe destinasi dan memberikan opsi yang berpotensi menarik bagi pengguna, sehingga meningkatkan peluang kepuasan dan keterlibatan lebih lanjut. Secara keseluruhan, output ini memperlihatkan efektivitas model deep learning dalam mempersonalisasi rekomendasi berbasis data interaksi historis, menghasilkan daftar destinasi yang variatif namun tetap relevan dengan preferensi unik setiap pengguna.
 
-### 6. Ringkasan Hyperparameter Model Collaborative Filtering
+### 4. Ringkasan Hyperparameter Model Collaborative Filtering
 
-#### 1. **Embedding-related Hyperparameters**
+   #### 1. **Embedding-related Hyperparameters**
+   
+   | Hyperparameter           | Nilai                         | Penjelasan                                       |
+   | ------------------------ | ----------------------------- | ------------------------------------------------ |
+   | `embedding_size`         | `8` (saat inisialisasi)       | Ukuran vektor embedding untuk user dan destinasi |
+   | `embeddings_initializer` | `'he_normal'`                 | Metode inisialisasi bobot embedding              |
+   | `embeddings_regularizer` | `keras.regularizers.l2(1e-4)` | Regularisasi L2 untuk mencegah overfitting       |
+   
+   #### 2. **Model Training Hyperparameters**
+   
+   | Hyperparameter  | Nilai                       | Penjelasan                              |
+   | --------------- | --------------------------- | --------------------------------------- |
+   | `loss`          | `MeanSquaredError()`        | Fungsi loss untuk regresi rating        |
+   | `optimizer`     | `Adam(learning_rate=0.001)` | Optimizer yang digunakan                |
+   | `learning_rate` | `0.001`                     | Learning rate awal untuk Adam optimizer |
+   | `metrics`       | `RootMeanSquaredError()`    | Metrik evaluasi performa model          |
+   
+   **Callback Hyperparameters**
+   
+   #### 3. **EarlyStopping**
+   
+   | Hyperparameter         | Nilai        | Penjelasan                                  |
+   | ---------------------- | ------------ | ------------------------------------------- |
+   | `monitor`              | `'val_loss'` | Metrik yang dipantau                        |
+   | `patience`             | `10`         | Berhenti jika tidak membaik selama 10 epoch |
+   | `verbose`              | `1`          | Menampilkan info saat early stop terjadi    |
+   | `restore_best_weights` | `True`       | Mengembalikan bobot terbaik saat pelatihan  |
+   
+   #### 4. **ReduceLROnPlateau**
+   
+   | Hyperparameter | Nilai        | Penjelasan                             |
+   | -------------- | ------------ | -------------------------------------- |
+   | `monitor`      | `'val_loss'` | Metrik yang dipantau                   |
+   | `factor`       | `0.1`        | Pengurangan learning rate saat stagnan |
+   | `patience`     | `5`          | Tunggu 5 epoch sebelum menurunkan LR   |
+   | `verbose`      | `1`          | Menampilkan info saat LR diturunkan    |
+   | `min_lr`       | `0.00001`    | Batas bawah learning rate              |
 
-| Hyperparameter           | Nilai                         | Penjelasan                                       |
-| ------------------------ | ----------------------------- | ------------------------------------------------ |
-| `embedding_size`         | `8` (saat inisialisasi)       | Ukuran vektor embedding untuk user dan destinasi |
-| `embeddings_initializer` | `'he_normal'`                 | Metode inisialisasi bobot embedding              |
-| `embeddings_regularizer` | `keras.regularizers.l2(1e-4)` | Regularisasi L2 untuk mencegah overfitting       |
-
-#### 2. **Model Training Hyperparameters**
-
-| Hyperparameter  | Nilai                       | Penjelasan                              |
-| --------------- | --------------------------- | --------------------------------------- |
-| `loss`          | `MeanSquaredError()`        | Fungsi loss untuk regresi rating        |
-| `optimizer`     | `Adam(learning_rate=0.001)` | Optimizer yang digunakan                |
-| `learning_rate` | `0.001`                     | Learning rate awal untuk Adam optimizer |
-| `metrics`       | `RootMeanSquaredError()`    | Metrik evaluasi performa model          |
-
-**Callback Hyperparameters**
-
-#### 3. **EarlyStopping**
-
-| Hyperparameter         | Nilai        | Penjelasan                                  |
-| ---------------------- | ------------ | ------------------------------------------- |
-| `monitor`              | `'val_loss'` | Metrik yang dipantau                        |
-| `patience`             | `10`         | Berhenti jika tidak membaik selama 10 epoch |
-| `verbose`              | `1`          | Menampilkan info saat early stop terjadi    |
-| `restore_best_weights` | `True`       | Mengembalikan bobot terbaik saat pelatihan  |
-
-#### 4. **ReduceLROnPlateau**
-
-| Hyperparameter | Nilai        | Penjelasan                             |
-| -------------- | ------------ | -------------------------------------- |
-| `monitor`      | `'val_loss'` | Metrik yang dipantau                   |
-| `factor`       | `0.1`        | Pengurangan learning rate saat stagnan |
-| `patience`     | `5`          | Tunggu 5 epoch sebelum menurunkan LR   |
-| `verbose`      | `1`          | Menampilkan info saat LR diturunkan    |
-| `min_lr`       | `0.00001`    | Batas bawah learning rate              |
-
-### 7. Kelebihan dan Kekurangan Collaborative Filtering (dengan Deep Learning)
+### 5. Kelebihan dan Kekurangan Collaborative Filtering (dengan Deep Learning)
 
 * **Kelebihan:**
     * **Tidak Memerlukan Fitur Item Manual:** Model belajar langsung dari interaksi pengguna-item (rating), sehingga tidak memerlukan *feature engineering* yang ekstensif pada konten item.
