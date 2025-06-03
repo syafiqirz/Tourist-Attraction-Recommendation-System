@@ -1,7 +1,7 @@
 # Laporan Proyek Machine Learning - Sistem Rekomendasi Destinasi Wisata Indoensia
 ### Oleh Muhammad Syafiq Irzaky
 
-# 🌍 Project Overview (Ulasan Proyek)
+# 🌍 Project Overview
 
 Bagian ini memberikan gambaran umum mengenai proyek sistem rekomendasi tempat wisata di Indonesia. Ini mencakup latar belakang, justifikasi pentingnya proyek, serta tinjauan terhadap penelitian terkait yang menjadi dasar pengembangan.
 
