@@ -382,7 +382,7 @@ Untuk menghasilkan dataframe dari pemrosesan data secara keseluruhan, dibuat sal
     * **Mempermudah Analisis dan Visualisasi:** Mengurutkan data berdasarkan `Place_Id` dapat mempermudah inspeksi manual data, analisis eksploratif lebih lanjut (misalnya, melihat semua rating untuk destinasi tertentu secara berurutan), dan membantu dalam visualisasi pola rating antar tempat wisata.
     * **Kesiapan untuk Tahap Selanjutnya:** Dataset yang telah dibersihkan dan diorganisir ini dianggap siap untuk tahap *feature engineering* dan proses pembuatan model rekomendasi.
 
-## 4. Persiapan Data untuk Model Content Based Filtering
+## 5. Persiapan Data untuk Model Content Based Filtering
 ### 1. Persiapan data
 Sebelum membangun model CBF, data perlu disiapkan secara khusus. Karena CBF berfokus pada karakteristik intrinsik item (destinasi wisata), kita memerlukan daftar unik destinasi beserta fitur-fiturnya.
 
@@ -434,7 +434,7 @@ Inti dari CBF adalah representasi fitur item dalam format numerik yang dapat dio
 * **Alasan Dilakukan:**
     TF-IDF mengubah data teks kategori menjadi representasi vektor numerik. Meskipun dalam kasus ini setiap destinasi hanya memiliki satu kategori (sehingga TF-IDF berperilaku mirip *one-hot encoding*), penggunaan TF-IDF adalah pendekatan standar yang fleksibel jika di masa depan fitur teks yang lebih kompleks (seperti deskripsi) ingin disertakan. Matriks numerik ini memungkinkan perhitungan matematis untuk kesamaan antar destinasi.
 
-## 5. Persiapan Data untuk Model Collaborative Filtering
+## 6. Persiapan Data untuk Model Collaborative Filtering
 ### 1. Persiapan data
 Tahap awal dalam pengembangan model CF adalah mempersiapkan data interaksi pengguna-destinasi dan melakukan encoding pada ID pengguna serta ID destinasi.
 
