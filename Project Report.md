@@ -668,33 +668,32 @@ Setelah model dilatih, model tersebut dapat digunakan untuk memberikan rekomenda
 
 * **Contoh Output Rekomendasi (Top-10 untuk User ID: 1):**
     ```
-    🎯 Showing Recommendations for User ID: 1
-    ============================================================
-
-    📌 Top 5 Destinations Visited by User (Based on Rating):
-    ------------------------------------------------------------
-    No.  Destination                       | Category            
-    ------------------------------------------------------------
-    1    Atlantis Water Adventure          | Taman_Hiburan       
-    2    Museum Gedung Sate                | Budaya              
-    3    Taman Harmoni Keputih             | Cagar_Alam          
-    4    Taman Sungai Mudal                | Cagar_Alam          
-    5    Surabaya North Quay               | Taman_Hiburan       
-
-    ✨ Top 10 Destination Recommendations for User:
-------------------------------------------------------------
-No.  Destination                         | Category            
-------------------------------------------------------------
-1    Bukit Jamur                         | Cagar_Alam          
-2    Glamping Lakeside Rancabali         | Taman_Hiburan       
-3    Monumen Yogya Kembali               | Budaya              
-4    Jogja Bay Pirates Adventure Waterpark | Taman_Hiburan       
-5    Selasar Sunaryo Art Space           | Taman_Hiburan       
-6    Keraton Surabaya                    | Budaya              
-7    Stone Garden Citatah                | Taman_Hiburan       
-8    Kota Mini                           | Taman_Hiburan       
-9    Taman Hiburan Rakyat                | Taman_Hiburan       
-10   Obyek Wisata Goa Kreo               | Cagar_Alam 
+      🎯 Showing Recommendations for User ID: 1
+      ============================================================
+      
+      📌 Top 5 Destinations Visited by User (Based on Rating):
+      ------------------------------------------------------------
+      No.  Destination                         | Category            
+      ------------------------------------------------------------
+      1    Atlantis Water Adventure            | Taman_Hiburan       
+      2    Museum Gedung Sate                  | Budaya              
+      3    Taman Harmoni Keputih               | Cagar_Alam          
+      4    Taman Sungai Mudal                  | Cagar_Alam          
+      5    Surabaya North Quay                 | Taman_Hiburan       
+      
+      ✨ Top 10 Destination Recommendations for User:
+      ------------------------------------------------------------
+      No.  Destination                         | Category            
+      ------------------------------------------------------------
+      1    Bukit Jamur                         | Cagar_Alam          
+      2    Glamping Lakeside Rancabali         | Taman_Hiburan       
+      3    Monumen Yogya Kembali               | Budaya              
+      4    Jogja Bay Pirates Adventure Waterpark | Taman_Hiburan       
+      5    Selasar Sunaryo Art Space           | Taman_Hiburan       
+      6    Keraton Surabaya                    | Budaya              
+      7    Stone Garden Citatah                | Taman_Hiburan       
+      8    Kota Mini                           | Taman_Hiburan       
+      9    Taman Hiburan Rakyat                | Taman_Hibur
     ```
     Output rekomendasi ini menunjukkan bagaimana model collaborative filtering dapat memahami preferensi pengguna berdasarkan histori interaksi dan memberikan rekomendasi destinasi wisata yang relevan dan beragam. Dari daftar 5 destinasi yang sudah dikunjungi dan dinilai tinggi oleh pengguna dengan ID 1, terlihat bahwa pengguna menyukai berbagai kategori seperti Taman Hiburan, Budaya, dan Cagar Alam. Model kemudian merekomendasikan 10 destinasi baru yang belum dikunjungi, namun sesuai dengan pola preferensi tersebut, mencakup destinasi dari kategori yang sama seperti Cagar Alam, Taman Hiburan, dan Budaya, serta menambahkan kategori Bahari yang mungkin juga relevan. Rekomendasi ini menunjukkan kemampuan model dalam menangkap kesukaan pengguna terhadap beragam tipe destinasi dan memberikan opsi yang berpotensi menarik bagi pengguna, sehingga meningkatkan peluang kepuasan dan keterlibatan lebih lanjut. Secara keseluruhan, output ini memperlihatkan efektivitas model deep learning dalam mempersonalisasi rekomendasi berbasis data interaksi historis, menghasilkan daftar destinasi yang variatif namun tetap relevan dengan preferensi unik setiap pengguna.
 
