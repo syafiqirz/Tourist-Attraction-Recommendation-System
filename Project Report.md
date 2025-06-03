@@ -697,6 +697,7 @@ Setelah model dilatih, model tersebut dapat digunakan untuk memberikan rekomenda
       7    Stone Garden Citatah                | Taman_Hiburan       
       8    Kota Mini                           | Taman_Hiburan       
       9    Taman Hiburan Rakyat                | Taman_Hibur
+      10   Obyek Wisata Goa Kreo               | Cagar_Alam 
     ```
     Output rekomendasi ini menunjukkan bagaimana model collaborative filtering dapat memahami preferensi pengguna berdasarkan histori interaksi dan memberikan rekomendasi destinasi wisata yang relevan dan beragam. Dari daftar 5 destinasi yang sudah dikunjungi dan dinilai tinggi oleh pengguna dengan ID 1, terlihat bahwa pengguna menyukai berbagai kategori seperti Taman Hiburan, Budaya, dan Cagar Alam. Model kemudian merekomendasikan 10 destinasi baru yang belum dikunjungi, namun sesuai dengan pola preferensi tersebut, mencakup destinasi dari kategori yang sama seperti Cagar Alam, Taman Hiburan, dan Budaya, serta menambahkan kategori Bahari yang mungkin juga relevan. Rekomendasi ini menunjukkan kemampuan model dalam menangkap kesukaan pengguna terhadap beragam tipe destinasi dan memberikan opsi yang berpotensi menarik bagi pengguna, sehingga meningkatkan peluang kepuasan dan keterlibatan lebih lanjut. Secara keseluruhan, output ini memperlihatkan efektivitas model deep learning dalam mempersonalisasi rekomendasi berbasis data interaksi historis, menghasilkan daftar destinasi yang variatif namun tetap relevan dengan preferensi unik setiap pengguna.
 
