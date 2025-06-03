@@ -217,7 +217,7 @@ Eksplorasi ini adalah untuk mengetahui sebaran rata-rata rating yang diperoleh t
 | Mean | 4.4 |
 | Median | 4.5 |
 
-![Screen Shot 2025-06-01 at 08 36 29](https://github.com/user-attachments/assets/bbb43f1f-8338-4b81-b830-cbdc1079de58)
+![Screen Shot 2025-06-03 at 19 36 28](https://github.com/user-attachments/assets/5c67cdfb-cef3-48a5-90b8-fcec74f4ed66)
 
 **Insight:** Distribusi rating destinasi wisata ini menunjukkan kecenderungan negatif (skewed ke kiri), yang berarti sebagian besar rating berada di rentang nilai tinggi, sekitar 4.2 hingga 4.8. Hal ini mengindikasikan bahwa banyak pengguna memberikan penilaian positif terhadap destinasi tersebut. Namun, rata-rata rating (mean) yang sebesar 4.4 sedikit lebih rendah dibanding median sebesar 4.5, menandakan ada sejumlah rating rendah yang menarik nilai rata-rata ke bawah. Dengan kata lain, meskipun umumnya destinasi mendapatkan nilai bagus, ada beberapa penilaian kurang memuaskan yang memengaruhi distribusi keseluruhan.
 
