@@ -124,7 +124,7 @@ Bagian ini memberikan pemahaman mendalam mengenai dataset yang digunakan dalam p
 | City | String | Lokasi kota | 5 kota |
 | Price | Integer | Harga tiket (IDR) | |
 | Rating | Float | Rating rata-rata (1-5) | |
-| Time_Minutes | Float | Durasi kunjungan (menit) | 47% missing |
+| Time_Minutes | Float | Durasi kunjungan (menit) | 53% missing |
 | Coordinate | Object | Koordinat geografis | |
 | Lat | Float | Latitude | |
 | Long | Float | Longitude | |
@@ -254,7 +254,7 @@ Dengan **total 10.000 rating,** kita dapat menghitung kepadatan matriks rating s
 
 1.  **Kualitas Data**:
     * Data pengguna dan data rating lengkap.
-    * Terdapat 47% nilai yang hilang (missing values) pada kolom `Time_Minutes`.
+    * Terdapat hanya 205 dari total 437 baris yang terisi atau sebanyak 53% nilai yang hilang (missing values) pada kolom `Time_Minutes`.
     * Adanya kolom-kolom `Unnamed` yang redundan dan tidak diperlukan.
 
 2.  **Demografi Pengguna**:
@@ -274,7 +274,7 @@ Dengan **total 10.000 rating,** kita dapat menghitung kepadatan matriks rating s
 ## 🚩 Permasalahan dan Insight Data
 
 1.  **Missing Values**:
-    * Kolom `Time_Minutes` pada data destinasi memiliki 47% data kosong, yang perlu ditangani jika fitur ini akan digunakan.
+    * Kolom `Time_Minutes` pada data destinasi memiliki 53% data kosong, yang perlu ditangani jika fitur ini akan digunakan.
     * Kolom-kolom `Unnamed` dapat dihapus karena tidak memberikan informasi relevan.
 
 2.  **Kemiringan Data (Data Skewness)**:
