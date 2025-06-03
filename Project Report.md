@@ -480,7 +480,7 @@ Tahap awal dalam pengembangan model CF adalah mempersiapkan data interaksi pengg
     * Mengetahui jumlah unik pengguna dan destinasi penting untuk menentukan ukuran *embedding layers*.
     * Informasi skala rating (min/max) digunakan untuk normalisasi nilai target (rating).
 
-### 2. Pembagian Data Latih dan Validasi (Train-Validation Split)
+### 2. Pembagian Data Latih dan Validasi (Train-Validation Split) dan Normalisasi Rating
 Dataset kemudian diacak dan dibagi menjadi data latih (*training set*) dan data validasi (*validation set*).
 
 * **Proses yang Dilakukan:**
