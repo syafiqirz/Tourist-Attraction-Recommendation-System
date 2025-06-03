@@ -366,7 +366,7 @@ Kualitas data sangat mempengaruhi kinerja model. Oleh karena itu, pemeriksaan da
     * **Memastikan Keunikan Entri:** Setiap baris data rating seharusnya merepresentasikan satu interaksi unik. Penghapusan duplikat meningkatkan kualitas dan integritas data.
 
 ## 4. Penyiapan Data Final untuk Analisis
-Sebagai langkah akhir dalam persiapan data, dibuat salinan kerja dari dataset yang telah bersih dan dilakukan pengurutan data.
+Untuk menghasilkan dataframe dari pemrosesan data secara keseluruhan, dibuat salinan kerja dari dataset yang telah bersih dan dilakukan pengurutan data. Nantinya, dataframe ini akan digunakan untuk diproses lebih lanjut dengan teknik dan metode terpisah sesuai dengan pendekatan solusi dan model yang akan dikembangkan.
 
 * **Proses yang Dilakukan:**
     1.  Sebuah variabel baru bernama `preparation` dibuat sebagai salinan (working copy) dari dataframe `tourism_rating` yang telah melalui semua tahapan pembersihan sebelumnya.
@@ -375,27 +375,15 @@ Sebagai langkah akhir dalam persiapan data, dibuat salinan kerja dari dataset ya
     # preparation = tourism_rating
     # preparation.sort_values('Place_Id')
     ```
-    **Struktur Data Final:** Dataframe `preparation` kini berisi 9.921 entri valid dengan 5 kolom utama: `User_Id`, `Place_Id`, `Place_Ratings`, `Place_Name`, dan `Category`.
+    **Struktur Data:** Dataframe `preparation` kini berisi 9.921 entri valid dengan 5 kolom utama: `User_Id`, `Place_Id`, `Place_Ratings`, `Place_Name`, dan `Category`.
 
 * **Alasan Dilakukan:**
     * **Salinan Kerja (Working Copy):** Membuat salinan data adalah praktik yang baik untuk menjaga dataset asli yang telah dibersihkan tetap utuh, sementara modifikasi atau eksperimen lebih lanjut dapat dilakukan pada salinan tersebut.
     * **Mempermudah Analisis dan Visualisasi:** Mengurutkan data berdasarkan `Place_Id` dapat mempermudah inspeksi manual data, analisis eksploratif lebih lanjut (misalnya, melihat semua rating untuk destinasi tertentu secara berurutan), dan membantu dalam visualisasi pola rating antar tempat wisata.
     * **Kesiapan untuk Tahap Selanjutnya:** Dataset yang telah dibersihkan dan diorganisir ini dianggap siap untuk tahap *feature engineering* dan proses pembuatan model rekomendasi.
 
-# 🧮 Modeling
-
-Tahap pemodelan adalah inti dari proses CRISP-DM di mana teknik-teknik *machine learning* diterapkan untuk mencapai tujuan proyek. Dalam proyek sistem rekomendasi destinasi wisata Indonesia ini, akan dikembangkan dan disajikan dua solusi rekomendasi utama yang menggunakan algoritma berbeda untuk memberikan saran destinasi kepada pengguna. Tujuannya adalah untuk dapat memberikan rekomendasi *Top-N* (sejumlah N destinasi teratas) yang relevan.
-
-Dua pendekatan utama yang akan diimplementasikan adalah:
-1.  **Content-Based Filtering (Penyaringan Berbasis Konten):** Memanfaatkan atribut atau fitur dari destinasi wisata (dalam kasus ini, kategori destinasi) untuk merekomendasikan item yang serupa.
-2.  **Collaborative Filtering (Penyaringan Kolaboratif):** Menggunakan interaksi historis pengguna dengan destinasi (seperti rating) dan menerapkan model *deep learning* berbasis *embedding* untuk menemukan pola kesukaan dan merekomendasikan destinasi berdasarkan preferensi pengguna lain yang serupa.
-
-Berikut ini adalah penjelasan detail untuk masing-masing pendekatan:
-
-## Solusi 1: Content-Based Filtering (CBF)
-Pendekatan *Content-Based Filtering* (CBF) merekomendasikan item berdasarkan kemiripan antara fitur item yang telah disukai pengguna di masa lalu dengan fitur item lain yang tersedia. Dalam konteks proyek ini, CBF akan diimplementasikan dengan memanfaatkan **kategori destinasi wisata** sebagai fitur utama. Prosesnya melibatkan transformasi data kategori menggunakan TF-IDF (*Term Frequency-Inverse Document Frequency*) untuk mengukur bobot pentingnya setiap kategori, diikuti dengan perhitungan *Cosine Similarity* untuk mengidentifikasi kemiripan antar destinasi.
-
-### 1. Persiapan Data untuk Content-Based Filtering
+## 4. Persiapan Data untuk Model Content Based Filtering
+### 1. Persiapan data
 Sebelum membangun model CBF, data perlu disiapkan secara khusus. Karena CBF berfokus pada karakteristik intrinsik item (destinasi wisata), kita memerlukan daftar unik destinasi beserta fitur-fiturnya.
 
 * **Proses yang Dilakukan:**
@@ -446,11 +434,77 @@ Inti dari CBF adalah representasi fitur item dalam format numerik yang dapat dio
 * **Alasan Dilakukan:**
     TF-IDF mengubah data teks kategori menjadi representasi vektor numerik. Meskipun dalam kasus ini setiap destinasi hanya memiliki satu kategori (sehingga TF-IDF berperilaku mirip *one-hot encoding*), penggunaan TF-IDF adalah pendekatan standar yang fleksibel jika di masa depan fitur teks yang lebih kompleks (seperti deskripsi) ingin disertakan. Matriks numerik ini memungkinkan perhitungan matematis untuk kesamaan antar destinasi.
 
-### 4. Perhitungan Kemiripan Antar Destinasi dengan Cosine Similarity
-Setelah destinasi direpresentasikan sebagai vektor TF-IDF, langkah selanjutnya adalah menghitung kemiripan antar semua pasangan destinasi.
+## 5. Persiapan Data untuk Model Collaborative Filtering
+### 1. Persiapan data
+Tahap awal dalam pengembangan model CF adalah mempersiapkan data interaksi pengguna-destinasi dan melakukan encoding pada ID pengguna serta ID destinasi.
 
 * **Proses yang Dilakukan:**
-    1.  Fungsi `cosine_similarity` dari `sklearn.metrics.pairwise` diterapkan pada `tfidf_matrix`.
+    1.  Salinan dari dataset `preparation` (yang merupakan hasil dari tahap Data Preparation sebelumnya dan berisi 9.921 entri rating unik) dibuat dan disimpan dalam variabel `df`.
+        ```python
+        # df = preparation.copy()
+        ```
+    2.  ID pengguna (`User_Id`) dan ID tempat wisata (`Place_Id`) yang asli di-encode menjadi indeks numerik yang berurutan mulai dari 0. Proses ini melibatkan pembuatan *mapping dictionary*:
+        * `user_to_user_encoded` (ID asli ke ID ter-encode) dan `user_encoded_to_user` (ID ter-encode ke ID asli).
+        * `place_to_place_encoded` (ID asli ke ID ter-encode) dan `place_encoded_to_place` (ID ter-encode ke ID asli).
+    3.  Hasil encoding ini ditambahkan sebagai kolom baru (`user_encoded` dan `place_encoded`) ke dalam dataframe `df`.
+        ```python
+        # user_ids = df['User_Id'].unique().tolist()
+        # user_to_user_encoded = {x: i for i, x in enumerate(user_ids)}
+        # # ... (dan seterusnya untuk user_encoded_to_user, place_ids, place_to_place_encoded, place_encoded_to_place) ...
+        # df['user_encoded'] = df['User_Id'].map(user_to_user_encoded)
+        # df['place_encoded'] = df['Place_Id'].map(place_to_place_encoded)
+        ```
+    4.  Dilakukan perhitungan jumlah pengguna unik (300) dan destinasi unik (437), serta identifikasi nilai rating minimum (1) dan maksimum (5) dari dataset.
+
+* **Alasan Dilakukan:**
+    * Model *neural network*, khususnya *embedding layers* di TensorFlow/Keras, memerlukan input berupa indeks integer yang dimulai dari 0. Encoding memastikan ID pengguna dan destinasi sesuai dengan format ini.
+    * *Mapping dictionary* diperlukan untuk mengkonversi ID asli ke format yang dibutuhkan model dan sebaliknya, untuk menginterpretasikan hasil prediksi.
+    * Mengetahui jumlah unik pengguna dan destinasi penting untuk menentukan ukuran *embedding layers*.
+    * Informasi skala rating (min/max) digunakan untuk normalisasi nilai target (rating).
+
+### 2. Pembagian Data Latih dan Validasi (Train-Validation Split)
+Dataset kemudian diacak dan dibagi menjadi data latih (*training set*) dan data validasi (*validation set*).
+
+* **Proses yang Dilakukan:**
+    1.  Seluruh dataset `df` diacak secara acak (menggunakan `df.sample(frac=1, random_state=42)`) untuk memastikan tidak ada bias urutan.
+    2.  Variabel input `x` dibentuk dari pasangan kolom `user_encoded` dan `place_encoded`.
+    3.  Variabel target `y` (rating) dinormalisasi ke rentang [0, 1] menggunakan Min-Max Scaling: $y = (Place Ratings - min rating) / (max rating - min rating)$.
+        ```python
+        # x = df[['user_encoded', 'place_encoded']].values
+        # y = df['Place_Ratings'].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
+        ```
+    4.  Data dibagi menjadi 80% untuk data latih dan 20% untuk data validasi. Ini menghasilkan 7.936 sampel data latih dan 1.985 sampel data validasi.
+        ```python
+        # train_indices = int(0.8 * df.shape[0])
+        # x_train, x_val, y_train, y_val = (
+        #     x[:train_indices], x[train_indices:],
+        #     y[:train_indices], y[train_indices:]
+        # )
+        ```
+
+* **Alasan Dilakukan:**
+    * Pengacakan data penting untuk memastikan bahwa data latih dan validasi merepresentasikan distribusi data keseluruhan secara merata.
+    * Normalisasi nilai target (rating) ke rentang [0, 1] membantu stabilisasi proses pelatihan model *neural network* dan cocok dengan penggunaan fungsi aktivasi sigmoid pada layer output model.
+    * Pembagian data menjadi set latih dan validasi adalah praktik standar untuk mengevaluasi seberapa baik model dapat melakukan generalisasi terhadap data baru yang belum pernah dilihat sebelumnya, serta untuk mendeteksi dan mencegah *overfitting*.
+
+# 🧮 Modeling
+
+Tahap pemodelan adalah inti dari proses CRISP-DM di mana teknik-teknik *machine learning* diterapkan untuk mencapai tujuan proyek. Dalam proyek sistem rekomendasi destinasi wisata Indonesia ini, akan dikembangkan dan disajikan dua solusi rekomendasi utama yang menggunakan algoritma berbeda untuk memberikan saran destinasi kepada pengguna. Tujuannya adalah untuk dapat memberikan rekomendasi *Top-N* (sejumlah N destinasi teratas) yang relevan.
+
+Dua pendekatan utama yang akan diimplementasikan adalah:
+1.  **Content-Based Filtering (Penyaringan Berbasis Konten):** Memanfaatkan atribut atau fitur dari destinasi wisata (dalam kasus ini, kategori destinasi) untuk merekomendasikan item yang serupa.
+2.  **Collaborative Filtering (Penyaringan Kolaboratif):** Menggunakan interaksi historis pengguna dengan destinasi (seperti rating) dan menerapkan model *deep learning* berbasis *embedding* untuk menemukan pola kesukaan dan merekomendasikan destinasi berdasarkan preferensi pengguna lain yang serupa.
+
+Berikut ini adalah penjelasan detail untuk masing-masing pendekatan:
+
+## Solusi 1: Content-Based Filtering (CBF)
+Pendekatan *Content-Based Filtering* (CBF) merekomendasikan item berdasarkan kemiripan antara fitur item yang telah disukai pengguna di masa lalu dengan fitur item lain yang tersedia. Dalam konteks proyek ini, CBF akan diimplementasikan dengan memanfaatkan **kategori destinasi wisata** sebagai fitur utama. Prosesnya melibatkan  perhitungan *Cosine Similarity* untuk mengidentifikasi kemiripan antar destinasi.
+
+### 1. Perhitungan Kemiripan Antar Destinasi dengan Cosine Similarity
+Setelah destinasi direpresentasikan sebagai vektor TF-IDF pada tahap data preparation, langkah pemodelan pertama adalah menghitung kemiripan antar semua pasangan destinasi.
+
+* **Proses yang Dilakukan:**
+    1.  Fungsi `cosine_similarity` dari `sklearn.metrics.pairwise` diterapkan pada `tfidf_matrix` yang berasal dari tahap data preparation.
         ```python
         # from sklearn.metrics.pairwise import cosine_similarity
         # cosine_sim = cosine_similarity(tfidf_matrix)
@@ -464,7 +518,7 @@ Setelah destinasi direpresentasikan sebagai vektor TF-IDF, langkah selanjutnya a
 * **Alasan Dilakukan:**
     *Cosine Similarity* adalah metrik yang umum digunakan untuk mengukur kesamaan antara dua vektor dalam ruang multidimensi. Metrik ini efektif untuk data tekstual yang telah divektorisasi. Matriks `cosine_sim_df` menjadi dasar bagi model CBF untuk menemukan destinasi yang paling mirip dengan destinasi input.
 
-### 5. Implementasi Fungsi Rekomendasi Destinasi Wisata
+### 2. Implementasi Fungsi Rekomendasi Destinasi Wisata
 Untuk menghasilkan rekomendasi, sebuah fungsi khusus dibuat.
 
 * **Proses yang Dilakukan:**
@@ -544,57 +598,7 @@ Pendekatan CBF memiliki karakteristiknya sendiri:
 ## Solusi 2: Collaborative Filtering (CF) dengan Embedding Deep Learning
 Pendekatan *Collaborative Filtering* (CF) bekerja berdasarkan ide bahwa pengguna yang memiliki preferensi serupa di masa lalu cenderung akan menyukai item yang sama di masa depan. Berbeda dengan CBF yang fokus pada fitur item, CF fokus pada pola interaksi pengguna-item (misalnya, rating yang diberikan). Dalam proyek ini, CF diimplementasikan menggunakan model *deep learning* yang memanfaatkan teknik *embedding* untuk mempelajari representasi laten (tersembunyi) dari pengguna dan destinasi.
 
-### 1. Persiapan Data dan Encoding untuk Collaborative Filtering
-Tahap awal dalam pengembangan model CF adalah mempersiapkan data interaksi pengguna-destinasi dan melakukan encoding pada ID pengguna serta ID destinasi.
 
-* **Proses yang Dilakukan:**
-    1.  Salinan dari dataset `preparation` (yang merupakan hasil dari tahap Data Preparation sebelumnya dan berisi 9.921 entri rating unik) dibuat dan disimpan dalam variabel `df`.
-        ```python
-        # df = preparation.copy()
-        ```
-    2.  ID pengguna (`User_Id`) dan ID tempat wisata (`Place_Id`) yang asli di-encode menjadi indeks numerik yang berurutan mulai dari 0. Proses ini melibatkan pembuatan *mapping dictionary*:
-        * `user_to_user_encoded` (ID asli ke ID ter-encode) dan `user_encoded_to_user` (ID ter-encode ke ID asli).
-        * `place_to_place_encoded` (ID asli ke ID ter-encode) dan `place_encoded_to_place` (ID ter-encode ke ID asli).
-    3.  Hasil encoding ini ditambahkan sebagai kolom baru (`user_encoded` dan `place_encoded`) ke dalam dataframe `df`.
-        ```python
-        # user_ids = df['User_Id'].unique().tolist()
-        # user_to_user_encoded = {x: i for i, x in enumerate(user_ids)}
-        # # ... (dan seterusnya untuk user_encoded_to_user, place_ids, place_to_place_encoded, place_encoded_to_place) ...
-        # df['user_encoded'] = df['User_Id'].map(user_to_user_encoded)
-        # df['place_encoded'] = df['Place_Id'].map(place_to_place_encoded)
-        ```
-    4.  Dilakukan perhitungan jumlah pengguna unik (300) dan destinasi unik (437), serta identifikasi nilai rating minimum (1) dan maksimum (5) dari dataset.
-
-* **Alasan Dilakukan:**
-    * Model *neural network*, khususnya *embedding layers* di TensorFlow/Keras, memerlukan input berupa indeks integer yang dimulai dari 0. Encoding memastikan ID pengguna dan destinasi sesuai dengan format ini.
-    * *Mapping dictionary* diperlukan untuk mengkonversi ID asli ke format yang dibutuhkan model dan sebaliknya, untuk menginterpretasikan hasil prediksi.
-    * Mengetahui jumlah unik pengguna dan destinasi penting untuk menentukan ukuran *embedding layers*.
-    * Informasi skala rating (min/max) digunakan untuk normalisasi nilai target (rating).
-
-### 2. Pembagian Data Latih dan Validasi (Train-Validation Split)
-Dataset kemudian diacak dan dibagi menjadi data latih (*training set*) dan data validasi (*validation set*).
-
-* **Proses yang Dilakukan:**
-    1.  Seluruh dataset `df` diacak secara acak (menggunakan `df.sample(frac=1, random_state=42)`) untuk memastikan tidak ada bias urutan.
-    2.  Variabel input `x` dibentuk dari pasangan kolom `user_encoded` dan `place_encoded`.
-    3.  Variabel target `y` (rating) dinormalisasi ke rentang [0, 1] menggunakan Min-Max Scaling: $y = (Place Ratings - min rating) / (max rating - min rating)$.
-        ```python
-        # x = df[['user_encoded', 'place_encoded']].values
-        # y = df['Place_Ratings'].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
-        ```
-    4.  Data dibagi menjadi 80% untuk data latih dan 20% untuk data validasi. Ini menghasilkan 7.936 sampel data latih dan 1.985 sampel data validasi.
-        ```python
-        # train_indices = int(0.8 * df.shape[0])
-        # x_train, x_val, y_train, y_val = (
-        #     x[:train_indices], x[train_indices:],
-        #     y[:train_indices], y[train_indices:]
-        # )
-        ```
-
-* **Alasan Dilakukan:**
-    * Pengacakan data penting untuk memastikan bahwa data latih dan validasi merepresentasikan distribusi data keseluruhan secara merata.
-    * Normalisasi nilai target (rating) ke rentang [0, 1] membantu stabilisasi proses pelatihan model *neural network* dan cocok dengan penggunaan fungsi aktivasi sigmoid pada layer output model.
-    * Pembagian data menjadi set latih dan validasi adalah praktik standar untuk mengevaluasi seberapa baik model dapat melakukan generalisasi terhadap data baru yang belum pernah dilihat sebelumnya, serta untuk mendeteksi dan mencegah *overfitting*.
 
 ### 3. Membangun Model Deep Learning untuk Collaborative Filtering
 Sebuah model *neural network* kustom dirancang menggunakan Keras API untuk melakukan *collaborative filtering* berbasis *embedding*.
