@@ -434,6 +434,24 @@ Inti dari CBF adalah representasi fitur item dalam format numerik yang dapat dio
 * **Alasan Dilakukan:**
     TF-IDF mengubah data teks kategori menjadi representasi vektor numerik. Meskipun dalam kasus ini setiap destinasi hanya memiliki satu kategori (sehingga TF-IDF berperilaku mirip *one-hot encoding*), penggunaan TF-IDF adalah pendekatan standar yang fleksibel jika di masa depan fitur teks yang lebih kompleks (seperti deskripsi) ingin disertakan. Matriks numerik ini memungkinkan perhitungan matematis untuk kesamaan antar destinasi.
 
+### 3. Ringkasan Hyperparameter TF-IDF Vectorizer (`TfidfVectorizer`)
+
+Walaupun **tidak menyetel secara eksplisit**, dalam penggunaan **TF-IDF**, memang ada beberapa **hyperparameter**, meskipun banyak yang secara implisit menggunakan nilai default yang tetap memengaruhi performa sistem rekomendasi berbasis konten. Berikut hyperparameter defaultnya:
+
+| Hyperparameter | Nilai (default jika tidak disebut) | Penjelasan                                                  |
+| -------------- | ---------------------------------- | ----------------------------------------------------------- |
+| `analyzer`     | `'word'` (default)                 | Unit analisis (kata)                                        |
+| `lowercase`    | `True` (default)                   | Mengubah semua teks menjadi huruf kecil                     |
+| `stop_words`   | `None` (default)                   | Tidak menghapus stopwords (bisa diatur ke `'english'`)      |
+| `ngram_range`  | `(1,1)` (default)                  | Menggunakan unigram (1 kata)                                |
+| `max_df`       | `1.0` (default)                    | Mengabaikan kata yang muncul di lebih dari 100% dokumen     |
+| `min_df`       | `1` (default)                      | Mengabaikan kata yang muncul di kurang dari 1 dokumen       |
+| `max_features` | `None` (default)                   | Tidak ada batas jumlah fitur                                |
+| `norm`         | `'l2'` (default)                   | Normalisasi L2 pada setiap vektor TF-IDF                    |
+| `use_idf`      | `True` (default)                   | Mengaktifkan pembobotan inverse document frequency          |
+| `smooth_idf`   | `True` (default)                   | Menambahkan 1 ke dokument frequency untuk menghindari div/0 |
+| `sublinear_tf` | `False` (default)                  | Tidak menggunakan sublinear scaling pada tf                 |
+
 ## 6. Persiapan Data untuk Model Collaborative Filtering
 ### 1. Persiapan data
 Tahap awal dalam pengembangan model CF adalah mempersiapkan data interaksi pengguna-destinasi dan melakukan encoding pada ID pengguna serta ID destinasi.
@@ -553,32 +571,13 @@ Untuk menghasilkan rekomendasi, sebuah fungsi khusus dibuat.
     ```
     Ketika diuji dengan memasukkan ID Destinasi 400, sistem berhasil mengidentifikasi bahwa destinasi tersebut adalah Hutan Bambu Keputih yang termasuk dalam kategori Cagar_Alam. Berdasarkan informasi ini, sistem kemudian memberikan rekomendasi lima destinasi lain yang memiliki kategori serupa, yaitu Cagar_Alam. Rekomendasi yang dihasilkan mencerminkan kemampuan model untuk menghubungkan destinasi baru dengan destinasi lain yang serupa dari segi kategori, sehingga membantu pengguna menemukan tempat wisata dengan karakteristik dan tema yang konsisten sesuai preferensi awal mereka. Hal ini menunjukkan efektivitas model content-based filtering dalam menyediakan rekomendasi yang relevan dan sesuai konteks kategori destinasi yang diminati.
 
-### 6. Ringkasan Hyperparameter Model Content Based Filtering
+### 6. Ringkasan Hyperparameter Model Content Based Filtering Perhitungan Cosine Similarity (`cosine_similarity`)
 
-Walaupun **tidak menyetel secara eksplisit**, dalam tahap **Content-Based Filtering** menggunakan **TF-IDF + Cosine Similarity**, memang ada beberapa **hyperparameter**, meskipun banyak yang secara implisit menggunakan nilai default yang tetap memengaruhi performa sistem rekomendasi berbasis konten. Berikut hyperparameter defaultnya:
-
-#### 1. **TF-IDF Vectorizer (`TfidfVectorizer`)**
-
-| Hyperparameter | Nilai (default jika tidak disebut) | Penjelasan                                                  |
-| -------------- | ---------------------------------- | ----------------------------------------------------------- |
-| `analyzer`     | `'word'` (default)                 | Unit analisis (kata)                                        |
-| `lowercase`    | `True` (default)                   | Mengubah semua teks menjadi huruf kecil                     |
-| `stop_words`   | `None` (default)                   | Tidak menghapus stopwords (bisa diatur ke `'english'`)      |
-| `ngram_range`  | `(1,1)` (default)                  | Menggunakan unigram (1 kata)                                |
-| `max_df`       | `1.0` (default)                    | Mengabaikan kata yang muncul di lebih dari 100% dokumen     |
-| `min_df`       | `1` (default)                      | Mengabaikan kata yang muncul di kurang dari 1 dokumen       |
-| `max_features` | `None` (default)                   | Tidak ada batas jumlah fitur                                |
-| `norm`         | `'l2'` (default)                   | Normalisasi L2 pada setiap vektor TF-IDF                    |
-| `use_idf`      | `True` (default)                   | Mengaktifkan pembobotan inverse document frequency          |
-| `smooth_idf`   | `True` (default)                   | Menambahkan 1 ke dokument frequency untuk menghindari div/0 |
-| `sublinear_tf` | `False` (default)                  | Tidak menggunakan sublinear scaling pada tf                 |
-
-#### 2. **Cosine Similarity (`cosine_similarity`)**
+Walaupun **tidak menyetel secara eksplisit**, dalam tahap **Content-Based Filtering** menggunakan **Cosine Similarity**, ada **hyperparameter** yang menggunakan nilai default yang tetap memengaruhi performa sistem rekomendasi berbasis konten. Berikut hyperparameter defaultnya:
 
 | Hyperparameter | Nilai (default)  | Penjelasan                                            |
 | -------------- | ---------------- | ----------------------------------------------------- |
 | `dense_output` | `True` (default) | Output sebagai array numpy biasa, bukan sparse matrix |
-
 
 ### 7. Kelebihan dan Kekurangan Content-Based Filtering
 Pendekatan CBF memiliki karakteristiknya sendiri:
