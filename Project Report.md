@@ -292,7 +292,7 @@ Dengan **total 10.000 rating,** kita dapat menghitung kepadatan matriks rating s
 
 # ⚙️ Data Preparation
 
-Tahap Data Preparation merupakan langkah berikutnya setelah pemahaman data Data Understanding. Pada tahap ini, dataset mentah yang telah dieksplorasi akan diolah dan ditransformasi menjadi format yang sesuai dan optimal untuk tahap pemodelan. Proses ini melibatkan serangkaian teknik untuk membersihkan, mengintegrasikan, dan menstrukturkan data guna meningkatkan kualitas dan relevansinya untuk analisis lebih lanjut. Berikut adalah tahapan persiapan data yang dilakukan secara berurutan:
+Tahap Data Preparation merupakan langkah berikutnya setelah Data Understanding. Pada tahap ini, dataset mentah yang telah dieksplorasi akan diolah dan ditransformasi menjadi format yang sesuai dan optimal untuk tahap pemodelan. Proses ini melibatkan serangkaian teknik untuk membersihkan, mengintegrasikan, dan menstrukturkan data guna meningkatkan kualitas dan relevansinya untuk analisis lebih lanjut. Selain itu, tahap ini juga mencakup pembersihan data yang diperlukan untuk masing-masing pendekatan sistem rekomendasi. Tahap ini akan melakukan vektorisasi dengan TF-IDF untuk Content Based Learning dan melakukan encoding, normalisasi, dan data splitting untuk Collaborative Filtering. Berikut adalah tahapan persiapan data yang dilakukan secara berurutan:
 
 ## 1. Menggabungkan Kolom Nama dan Kategori Destinasi Wisata
 Langkah awal dalam persiapan data adalah menggabungkan informasi esensial dari beberapa sumber data menjadi satu dataset yang komprehensif. Dalam konteks ini, data rating pengguna akan diperkaya dengan detail mengenai destinasi wisata.
